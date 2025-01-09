@@ -1,19 +1,7 @@
 from pydantic import BaseModel, UUID4
 from typing import List, Optional
 from app.models.models import PizzaSizeEnum
-
-class ToppingBase(BaseModel):
-    name: str
-    price: float
-
-class ToppingCreate(ToppingBase):
-    pass
-
-class ToppingResponse(ToppingBase):
-    topping_id: UUID4
-
-    class Config:
-        from_attributes = True
+from app.schema.toppings import ToppingResponse
 
 class PizzaBase(BaseModel):
     name: str
@@ -26,6 +14,10 @@ class PizzaSizeCreate(BaseModel):
 
 class PizzaCreate(PizzaBase):
  sizes: List[PizzaSizeCreate]
+
+class PizzaUpdate(PizzaBase):
+    sizes: List[PizzaSizeCreate]
+    pass
 
 class PizzaSizeResponse(BaseModel):
     size: PizzaSizeEnum
