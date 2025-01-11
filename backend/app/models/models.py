@@ -62,6 +62,7 @@ class Pizza(Base):
     description = Column(String)
     base_price = Column(Float, nullable=False)
     image_url = Column(String)
+    category = Column(String, nullable=False)
     toppings = relationship("Topping", secondary=pizza_toppings, back_populates="pizzas")
     orders = relationship("OrderItem", back_populates="pizza")
     sizes = relationship("PizzaSize", back_populates="pizza")

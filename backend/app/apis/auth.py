@@ -35,5 +35,9 @@ def login(user_data: UserLogin, db: Session = Depends(get_db)):
     return {
         "access_token": access_token,
         "refresh_token": refresh_token,
+        "message": "Login Successful",
+        "username": user.username,
+        "email": user.email,
+        "role": user.role,
         "token_type": "bearer"
     }

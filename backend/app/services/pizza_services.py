@@ -17,7 +17,8 @@ class PizzaService:
         pizza = Pizza(
         name=pizza_create.name,
         description=pizza_create.description,
-        base_price=pizza_create.base_price
+        base_price=pizza_create.base_price,
+        category=pizza_create.category
     )
     
     # Create PizzaSize instances

@@ -7,6 +7,7 @@ class PizzaBase(BaseModel):
     name: str
     description: Optional[str] = None
     base_price: float
+    category: str
 
 class PizzaSizeCreate(BaseModel):
     size: PizzaSizeEnum
