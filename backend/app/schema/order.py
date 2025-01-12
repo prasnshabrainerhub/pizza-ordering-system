@@ -2,7 +2,8 @@ from pydantic import BaseModel, UUID4
 from typing import List, Optional
 from datetime import datetime
 from app.models.models import OrderStatus
-from app.schema.pizza import PizzaResponse, ToppingResponse
+from app.schema.pizza import PizzaResponse
+from app.schema.toppings import ToppingResponse
 
 class OrderItemCreate(BaseModel):
     pizza_id: UUID4

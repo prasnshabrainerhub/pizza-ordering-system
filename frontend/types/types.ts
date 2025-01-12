@@ -1,18 +1,23 @@
-export interface Pizza {
-  id: string;
-  name: string;
+enum PizzaSizeEnum {
+  SMALL = 'small',
+  MEDIUM = 'medium',
+  LARGE = 'large',
+}
+
+interface PizzaSize {
+  size: PizzaSizeEnum;
   price: number;
-  description: string;
-  ingredients: string[];
-  nutritionalInfo: {
-    calories: number;
-    fat: number;
-    cholesterol: number;
-    carbohydrate: number;
-    sugar: number;
-    protein: number;
-  };
-  image: string;
+}
+
+export interface Pizza {
+  name: string;
+  description?: string;
+  base_price: number;
+  category: string;
+  image_url: string;
+  sizes: PizzaSize[];
+  created_at?: Date;
+  updated_at?: Date | null;
 }
 
 export interface Promotion {
@@ -20,4 +25,41 @@ export interface Promotion {
   title: string;
   type: 'FLAT' | 'BUY_GET';
   value: string;
+}
+
+export enum DiscountType {
+  PERCENTAGE = "percentage",
+  FIXED = "fixed"
+}
+
+export interface Coupon {
+  coupon_id: string;
+  code: string;
+  discount_type: DiscountType;
+  discount_value: number;
+  description?: string;
+  valid_from: Date;
+  valid_until: Date;
+  min_order_value: number;
+  max_discount?: number;
+  is_active: boolean;
+  usage_limit?: number;
+}
+
+export type MenuItem = {
+  id: string;
+  name: string;
+  icon: string;
+  badge?: 'Popular' | 'New' | 'Deal' | 'Best';
+};
+
+export interface CartItem {
+  pizzaId: string;
+  name: string;
+  size: string;
+  variant: string;
+  toppings: string[];
+  quantity: number;
+  price: number;
+  imageUrl: string;
 }

@@ -25,6 +25,7 @@ interface AuthResponse {
 }
 
 export const API_BASE_URL = 'http://localhost:8000/api';
+export const STATIC_BASE_URL = `${API_BASE_URL}/static`;
 
 export const authApi = {
   login: async (credentials: LoginCredentials): Promise<AuthResponse> => {

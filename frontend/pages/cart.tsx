@@ -1,116 +1,171 @@
-'use client';
-
+import React from 'react';
+import { useCart } from '../components/CartContext';
+import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
-import { useCart } from '@/context/CartContext';
-import { Button } from '@/components/ui/button';
+import { Header } from '../components/Header';
 
-export default function CartPage() {
-  const { state } = useCart();
-  
-  // Calculate totals
-  const subtotal = state.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-  const GST = subtotal * 0.1; // Assuming 10% GST
-  const roundOff = Math.round((subtotal + GST) * 100) / 100 - (subtotal + GST);
-  const total = subtotal + GST + roundOff;
+const Cart = () => {
+  const { items, removeFromCart, updateQuantity } = useCart();
+
+  const calculateSubTotal = () => {
+    return items.reduce((total, item) => total + (item.price * item.quantity), 0);
+  };
+
+  const calculateGST = () => {
+    return calculateSubTotal() * 0.05;
+  };
+
+  const calculateRoundOff = () => {
+    const total = calculateSubTotal() + calculateGST();
+    return Math.round(total) - total;
+  };
+
+  const calculateTotal = () => {
+    return Math.round(calculateSubTotal() + calculateGST() + calculateRoundOff());
+  };
 
   return (
-    <div className="max-w-7xl mx-auto p-4 flex flex-col md:flex-row gap-6">
-      <div className="flex-1">
-        <div className="flex items-center mb-6">
-          <Link href="/dashboard" className="flex items-center text-red-500 hover:text-red-600">
-            <svg className="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
-            Back
-          </Link>
-        </div>
+    <div className="min-h-screen bg-gray-100">
+      <Header />
+      
+      <div className="max-w-6xl mx-auto p-4">
+        <Link href="/dashboard" className="inline-flex items-center gap-2 mb-6 text-green-600">
+          <ArrowLeft size={24} />
+          <span className="font-medium">Back</span>
+        </Link>
 
-        {state.items.length === 0 ? (
-          <div className="bg-white rounded-lg shadow p-8 text-center">
-            <div className="w-24 h-24 mx-auto mb-4 bg-red-50 rounded-full flex items-center justify-center">
-              <svg className="w-12 h-12 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-              </svg>
-            </div>
-            <h2 className="text-xl font-semibold mb-2">Cart is currently empty</h2>
-            <p className="text-gray-500">Looks like you haven&apos;t made your choices yet...</p>
-            <Link href="/menu" className="mt-4 inline-block">
-              <Button className="bg-red-500 hover:bg-red-600">Browse Menu</Button>
-            </Link>
-          </div>
-        ) : (
-          <div className="bg-white rounded-lg shadow p-6">
-            {state.items.map((item) => (
-              <div key={item.id} className="flex items-center justify-between py-4 border-b last:border-b-0">
-                <div>
-                  <h3 className="font-medium">{item.name}</h3>
-                  <p className="text-sm text-gray-500">${item.price.toFixed(2)}</p>
+        <div className="grid grid-cols-1 text-gray-800 md:grid-cols-2 gap-6">
+          {/* Left side - Cart Items */}
+          <div className="space-y-6">
+            {/* Items Container */}
+            <div className="bg-white rounded-lg shadow p-6">
+              {items.map((item, index) => (
+                <div key={`${item.pizzaId}-${item.size}-${item.variant}`} 
+                     className={`${index !== items.length - 1 ? 'border-b mb-4 pb-4' : ''}`}>
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <div className="flex items-center gap-2 mb-1">
+                        <div className="w-4 h-4 bg-green-500 rounded-sm"></div>
+                        <h3 className="font-medium text-gray-800">{item.name}</h3>
+                      </div>
+                      <p className="text-sm text-gray-600 mb-2">
+                        {item.size && `Size: ${item.size}`}
+                        {item.variant && `, Variant: ${item.variant}`}
+                      </p>
+                      {item.toppings?.length > 0 && (
+                        <div className="text-sm text-gray-500 mb-2">
+                          {item.toppings.map((topping, index) => (
+                            <div key={index}>{topping} - 0</div>
+                          ))}
+                        </div>
+                      )}
+                      <div className="flex items-center gap-3">
+                        <button
+                          onClick={() => updateQuantity(item.pizzaId, Math.max(0, item.quantity - 1))}
+                          className="w-8 h-8 flex items-center justify-center bg-gray-100 rounded-full"
+                        >
+                          -
+                        </button>
+                        <span className="w-8 text-center">{item.quantity}</span>
+                        <button
+                          onClick={() => updateQuantity(item.pizzaId, item.quantity + 1)}
+                          className="w-8 h-8 flex items-center justify-center bg-gray-100 rounded-full"
+                        >
+                          +
+                        </button>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className="font-medium mb-2">₹{item.price * item.quantity}.00</div>
+                      <button
+                        onClick={() => removeFromCart(item.pizzaId)}
+                        className="text-red-500"
+                      >
+                        <span className="sr-only">Remove</span>
+                        🗑️
+                      </button>
+                    </div>
+                  </div>
                 </div>
-                <div className="flex items-center gap-4">
-                  <div className="flex items-center gap-2">
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      className="h-8 w-8 p-0"
-                      onClick={() => {/* Add quantity decrease handler */}}
-                    >
-                      -
-                    </Button>
-                    <span className="w-8 text-center">{item.quantity}</span>
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      className="h-8 w-8 p-0"
-                      onClick={() => {/* Add quantity increase handler */}}
-                    >
-                      +
-                    </Button>
+              ))}
+            </div>
+
+            {/* Special Instructions Box */}
+            <div className="bg-white rounded-lg shadow p-6">
+              <textarea
+                placeholder="Mention your special instructions here..."
+                className="w-full p-3 border rounded-lg text-sm text-gray-600"
+                rows={3}
+              />
+            </div>
+          </div>
+
+          {/* Right side - Order Summary */}
+          <div className="space-y-6">
+            {/* Offers Box */}
+            <div className="bg-white rounded-lg shadow p-6">
+              <div className="flex items-center gap-2 mb-4">
+                <span className="p-1 bg-black text-white rounded">%</span>
+                <span className="font-medium">Buy 2 Get 1 Free</span>
+              </div>
+              <p className="text-sm text-gray-600">Select Minimum 3 Products.</p>
+              <div className="flex justify-between mt-4">
+                <button className="text-green-600 font-medium">Apply</button>
+                <button className="text-green-600 font-medium">View More Offers</button>
+              </div>
+            </div>
+
+            {/* My Basket Box */}
+            <div className="bg-white rounded-lg shadow p-6">
+              <h2 className="font-medium mb-6">My Basket</h2>
+              <div className="space-y-4 text-sm">
+                <div className="flex justify-between">
+                  <span>Sub Total:</span>
+                  <span>₹{calculateSubTotal()}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Discounts:</span>
+                  <span>₹0</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>GST:</span>
+                  <span>₹{calculateGST().toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Round Off:</span>
+                  <span>₹{calculateRoundOff().toFixed(2)}</span>
+                </div>
+                <div className="pt-4 border-t">
+                  <div className="flex justify-between font-medium text-lg">
+                    <span>Total To Pay:</span>
+                    <span className="text-green-600">₹{calculateTotal()}</span>
                   </div>
                 </div>
               </div>
-            ))}
-          </div>
-        )}
-      </div>
 
-      <div className="w-full md:w-80">
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="font-semibold text-lg mb-4">My Basket</h2>
-          
-          <div className="space-y-3 text-sm">
-            <div className="flex justify-between">
-              <span>Sub Total:</span>
-              <span>${subtotal.toFixed(2)}</span>
-            </div>
-            <div className="flex justify-between">
-              <span>Discounts:</span>
-              <span>$0.00</span>
-            </div>
-            <div className="flex justify-between">
-              <span>GST:</span>
-              <span>${GST.toFixed(2)}</span>
-            </div>
-            <div className="flex justify-between">
-              <span>Round Off:</span>
-              <span>${roundOff.toFixed(2)}</span>
-            </div>
-            <div className="flex justify-between font-semibold text-base pt-3 border-t">
-              <span>Total To Pay:</span>
-              <span>${total.toFixed(2)}</span>
-            </div>
-          </div>
+              <div className="space-y-4 mt-6">
+                <div className="grid grid-cols-2 gap-4">
+                  <button className="w-full py-3 bg-green-600 text-white rounded-lg">
+                    Delivery
+                  </button>
+                  <button className="w-full py-3 border border-green-600 text-green-600 rounded-lg">
+                    Pick up
+                  </button>
+                </div>
+                <Link href="/checkout" className="w-full py-3 bg-green-600 text-white rounded-lg font-medium flex items-center justify-center gap-2">
+                <span>CHECKOUT!</span>
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </Link>
 
-          <div className="mt-6 space-y-3">
-            <div className="grid grid-cols-2 gap-3">
-              <Button variant="outline">Pick up</Button>
-              <Button className="bg-red-500 hover:bg-red-600">Delivery</Button>
+              </div>
             </div>
-            <Button className="w-full bg-red-500 hover:bg-red-600">
-              CHECKOUT!
-            </Button>
           </div>
         </div>
       </div>
     </div>
   );
-}
+};
+
+export default Cart;

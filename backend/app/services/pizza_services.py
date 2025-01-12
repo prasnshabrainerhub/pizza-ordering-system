@@ -1,9 +1,11 @@
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
-from app.models.models import Pizza, PizzaSize
-from app.schema.pizza import PizzaCreate, PizzaUpdate
+from app.models.models import Pizza, PizzaSize, PizzaSizeEnum
+from app.schema.pizza import PizzaUpdate
 from typing import List
 import uuid
+import json
+import os
 
 
 
@@ -13,28 +15,42 @@ class PizzaService:
         return db.query(Pizza).all()
 
     @staticmethod
-    def create_pizza(db: Session, pizza_create: PizzaCreate) -> Pizza:
-        pizza = Pizza(
-        name=pizza_create.name,
-        description=pizza_create.description,
-        base_price=pizza_create.base_price,
-        category=pizza_create.category
-    )
-    
-    # Create PizzaSize instances
-        for size_data in pizza_create.sizes:
-            pizza_size = PizzaSize(
-                size=size_data.size,
-                price=size_data.price,
-                pizza=pizza
-            )
-            pizza.sizes.append(pizza_size)  # Append PizzaSize instance to Pizza
+    def create_pizza(name: str, description: str, base_price: float, category: str, sizes: str, image: str, db: Session):
+    # Parse sizes
+        try:
+            sizes_data = json.loads(sizes)
+        except json.JSONDecodeError:
+            raise HTTPException(status_code=400, detail="Invalid sizes data format")
 
-        db.add(pizza)
+        # Validate size enum values
+        for size_data in sizes_data:
+            if size_data["size"] not in [e.value for e in PizzaSizeEnum]:
+                raise HTTPException(status_code=400, detail=f"Invalid size value: {size_data['size']}")
+
+        # Create pizza
+        db_pizza = Pizza(
+            name=name,
+            description=description,
+            base_price=base_price,
+            category=category,
+            image_url=image  # Now passing the image path directly
+        )
+
+        # Create sizes
+        db_pizza.sizes = [
+            PizzaSize(
+                size=PizzaSizeEnum(size_data["size"]),
+                price=size_data["price"]
+            )
+            for size_data in sizes_data
+        ]
+
+        # Add to database
+        db.add(db_pizza)
         db.commit()
-        db.refresh(pizza)
-        
-        return pizza
+        db.refresh(db_pizza)
+
+        return db_pizza
     
     @staticmethod
     def update_pizza(db: Session, pizza_id: uuid.UUID, pizza_update: PizzaUpdate) -> Pizza:

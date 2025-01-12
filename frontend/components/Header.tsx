@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { ShoppingCart, LogIn, MapPin, MoreVertical, Home, User } from 'lucide-react';
 import { LoginModal } from './LoginModal';
 import { useRouter } from 'next/navigation';
-import { useCart } from '../context/CartContext'; 
+import { useCart } from '../components/CartContext';
 import Link from 'next/link';
 
 const decodeJWT = (token: string) => {
@@ -33,11 +33,7 @@ export const Header = () => {
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [userData, setUserData] = useState<UserData | null>(null);
 
-  // Calculate total items in cart
-  const cartItemsCount = state.items.reduce((total, item) => total + item.quantity, 0);
-
   useEffect(() => {
-    // Get user data from access token on component mount
     const getUserData = () => {
       const accessToken = localStorage.getItem('access_token');
       if (accessToken) {
@@ -72,19 +68,30 @@ export const Header = () => {
     localStorage.removeItem('access_token');
     localStorage.removeItem('refresh_token');
     setUserData(null);
-    // Add any additional logout logic here
   };
 
   return (
     <>
       <header className="bg-red-500 text-white py-4 z-10 relative">
         <nav className="container mx-auto flex justify-between items-center px-4">
-          <Link href='/' className='absolute left-20'>
-            <Home size={24} className='text-white' />
-          </Link>
-          <h1 className="text-2xl font-bold cursor-pointer" onClick={() => router.push('/')}>
-            Pizza Bliss
-          </h1>
+          {/* Logo and Home Button Section */}
+          <div className="flex items-center gap-8">
+            <button 
+              className="flex items-center gap-2 hover:text-gray-200" 
+              onClick={() => router.push('/')}
+            >
+              <Home size={24} className="text-white" />
+              <span className="text-lg">Home</span>
+            </button>
+            <h1 
+              className="text-2xl font-bold cursor-pointer" 
+              onClick={() => router.push('/')}
+            >
+              Pizza Bliss
+            </h1>
+          </div>
+
+          {/* Navigation Links */}
           <ul className="flex items-center gap-8 text-lg">
             <li>
               <button className="flex items-center gap-2 hover:text-gray-200">
@@ -109,17 +116,14 @@ export const Header = () => {
                 className="flex items-center gap-2 bg-white text-red-500 px-4 py-2 rounded-lg hover:bg-gray-100 relative"
               >
                 <ShoppingCart size={24} />
-                <span>Cart</span>
-                {cartItemsCount > 0 && (
+                <span>Cart</span>               
                   <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                    {cartItemsCount}
                   </span>
-                )}
               </button>
             </li>
             {userData && (
               <li>
-               <div className="flex items-center gap-2 px-3 py-2 bg-white text-red-500 rounded-lg">
+                <div className="flex items-center gap-2 px-3 py-2 bg-white text-red-500 rounded-lg">
                   <User size={20} />
                   <span>{userData.email}</span>
                   {userData.role === 'admin' && (

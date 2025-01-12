@@ -6,9 +6,10 @@ import { PizzaCard } from '../components/ui/PizzaCard';
 import { Pizza } from '../types/types';
 import { StoreHeader } from '../components/StoreHeader';
 import { AdminPanel } from '../components/AdminPanel';
-import { CreatePizzaForm } from '../components/admin/CreatePizzaForm';
-import { ManagePizzas } from '../components/admin/ManagePizzas';
+import { PizzaManagement } from '../components/admin/CreatePizzaForm';
 import { OrderHistory } from '../components/admin/OrderHistory';
+import { CouponManagement } from '../components/admin/CreateCouponForm';
+import { ToppingManagement } from '../components/admin/CreateToppings';
 
 const Dashboard: React.FC = () => {
   const [pizzas, setPizzas] = useState<Pizza[]>([]);
@@ -51,14 +52,54 @@ const Dashboard: React.FC = () => {
 
   const renderAdminContent = () => {
     switch (adminView) {
-      case 'create':
-        //@ts-ignore
-        return <CreatePizzaForm onSuccess={() => setAdminView('')} />;
-      case 'manage':
-        //@ts-ignore
-        return <ManagePizzas onSuccess={() => fetchPizzas()} />;
+      case 'pizzas':
+    return (
+        <div>
+            <button 
+                onClick={() => setAdminView('')}
+                className="mb-4 px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300"
+            >
+                ← Back
+            </button>
+            <PizzaManagement />
+        </div>
+    );
       case 'orders':
-        return <OrderHistory />;
+        return (
+          <div>
+            <button 
+              onClick={() => setAdminView('')}
+              className="mb-4 px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300"
+            >
+              ← Back
+            </button>
+            <OrderHistory />
+          </div>
+        );
+        case 'coupons':
+          return (
+            <div>
+              <button 
+                onClick={() => setAdminView('')}
+                className="mb-4 px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300"
+              >
+                ← Back
+              </button>
+              <CouponManagement />
+            </div>
+          );
+        case 'toppings':
+          return (
+            <div>
+              <button 
+                onClick={() => setAdminView('')}
+                className="mb-4 px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300"
+              >
+                ← Back
+              </button>
+              <ToppingManagement />
+            </div>
+          );
       default:
         return null;
     }
@@ -71,38 +112,51 @@ const Dashboard: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen text-black bg-gray-50">
-      <Header />
-      <div className="flex">
+    <div className="min-h-screen flex flex-col text-black bg-gray-50">
+    <Header />
+    <div className="flex flex-1 overflow-hidden">
+      {/* Sidebar with Fixed Width */}
+      <div className="w-72 bg-gray-200 flex-shrink-0 overflow-y-auto">
         <Sidebar />
-        <main className="flex-1">
-          <StoreHeader />
-          <div className="p-6">
-            {isAdmin && <AdminPanel onViewChange={setAdminView} />}
-            
-            {adminView ? (
-              renderAdminContent()
-            ) : (
-              <>
-                <Promotions />
-                <div className="mt-8">
-                  <h2 className="text-xl font-semibold mb-4">Buy 1 Get 4</h2>
-                  {loading ? (
-                    <div>Loading...</div>
-                  ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                      {pizzas.map((pizza) => (
-                        <PizzaCard key={pizza.id} pizza={pizza} />
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </>
-            )}
-          </div>
-        </main>
       </div>
+
+      {/* Main Content */}
+      <main className="flex-1 overflow-y-auto p-6">
+        <StoreHeader />
+
+        {/* Admin Panel */}
+        {isAdmin && (
+          <div className="mb-6">
+            <AdminPanel onViewChange={setAdminView} />
+          </div>
+        )}
+
+        {/* Conditional Rendering for Admin Content or Main Dashboard */}
+        {adminView ? (
+          <div className="p-6 bg-white shadow-md rounded-lg">
+            {renderAdminContent()}
+          </div>
+        ) : (
+          <>
+            <Promotions />
+            <div className="mt-8">
+              <h2 className="text-xl font-semibold mb-4">Buy 1 Get 4</h2>
+              {loading ? (
+                <div>Loading...</div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {pizzas.map((pizza) => (
+                    //@ts-ignore
+                    <PizzaCard key={pizza.id} pizza={pizza} />
+                  ))}
+                </div>
+              )}
+            </div>
+          </>
+        )}
+      </main>
     </div>
+  </div>
   );
 };
 

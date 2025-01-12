@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { PlusCircle, List, Package, History } from 'lucide-react';
+import { Pizza, History, Sandwich, Tag } from 'lucide-react';
 
 interface AdminPanelProps {
   onViewChange: (view: string) => void;
@@ -11,17 +11,10 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onViewChange }) => {
       <h2 className="text-xl font-semibold mb-4 text-red-500">Admin Controls</h2>
       <div className="flex gap-4">
         <button
-          onClick={() => onViewChange('create')}
-          className="flex items-center gap-2 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
+          onClick={() => onViewChange('pizzas')}
+          className="flex items-center justify-center gap-2 p-4 bg-red-600 text-white rounded-lg hover:bg-red-700"
         >
-          <PlusCircle size={20} />
-          Add New Pizza
-        </button>
-        <button
-          onClick={() => onViewChange('manage')}
-          className="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
-        >
-          <Package size={20} />
+          <Pizza size={24} />
           Manage Pizzas
         </button>
         <button
@@ -31,6 +24,21 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onViewChange }) => {
           <History size={20} />
           Order History
         </button>
+        <button
+        onClick={() => onViewChange('toppings')}
+        className="flex items-center justify-center gap-2 p-4 bg-orange-600 text-white rounded-lg hover:bg-orange-700"
+      >
+        <Sandwich size={24} />
+        Manage Toppings
+      </button>
+      
+      <button
+        onClick={() => onViewChange('coupons')}
+        className="flex items-center justify-center gap-2 p-4 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700"
+      >
+        <Tag size={24} />
+        Manage Coupons
+      </button>
       </div>
     </div>
   );

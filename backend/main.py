@@ -1,23 +1,32 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from app.core.database import engine, Base
 from app.apis import auth, pizza, orders, coupon, toppings
-from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI(title="Pizza Ordering System")
 
-allowed_origins = [
-    "http://localhost:3000",
-]
-
+# Expanded CORS configuration
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=allowed_origins,
+    allow_origins=["http://localhost:3000"],
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allow_headers=[
+        "Content-Type",
+        "Authorization",
+        "Accept",
+        "Origin",
+        "X-Requested-With",
+    ],
+    expose_headers=["*"],
+    max_age=600,  # Cache preflight requests for 10 minutes
 )
 
+# Rest of your configurations
 Base.metadata.create_all(bind=engine)
+
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 app.include_router(auth.router, prefix="/api", tags=["authentication"])
 app.include_router(pizza.router, prefix="/api", tags=["pizzas"])
