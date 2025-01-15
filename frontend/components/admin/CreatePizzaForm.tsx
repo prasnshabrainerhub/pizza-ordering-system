@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import React, { useState, useEffect } from 'react';
 import { Plus, Edit2, Trash2, Upload } from 'lucide-react';
 import Image from 'next/image';
@@ -29,6 +30,7 @@ interface Pizza extends Omit<PizzaFormData, 'image'> {
 }
 
 export const PizzaManagement: React.FC = () => {
+    const { t } = useTranslation();
     const [pizzas, setPizzas] = useState<Pizza[]>([]);
     const [isAddingPizza, setIsAddingPizza] = useState(false);
     const [editingPizza, setEditingPizza] = useState<Pizza | null>(null);

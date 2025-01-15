@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import React, { useState, useEffect, useRef } from 'react';
 import { ShoppingCart, LogIn, MoreVertical, Home, User, Package } from 'lucide-react';
 import { LoginModal } from './LoginModal';
@@ -31,6 +32,7 @@ const decodeJWT = (token: string) => {
 };
 
 export const Header = () => {
+  const { t } = useTranslation();
   const router = useRouter();
   const { state } = useCart();
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);

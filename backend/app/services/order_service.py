@@ -7,6 +7,7 @@ from app.schema.order import OrderCreate
 from app.services.coupon_services import CouponService
 from app.services.notification_service import notify_user
 from app.core.database import get_db
+from app.services.websocket_manager import manager
 
 class OrderService:
     @staticmethod
@@ -65,30 +66,33 @@ class OrderService:
             db.rollback()
             print(f"Error creating order: {str(e)}")  # Log the error
             raise HTTPException(status_code=500, detail=str(e))
-        
-
-        except Exception as e:
-            db.rollback()
-            print(f"Error creating order: {str(e)}")  # Add logging
-            raise HTTPException(status_code=500, detail=str(e))
-
-        except ValueError as ve:
-            db.rollback()
-            raise HTTPException(status_code=422, detail="Invalid UUID format")
-        except Exception as e:
-            db.rollback()
-            raise HTTPException(status_code=500, detail=str(e))
 
 
     @staticmethod
-    def update_order_status(db: Session, order_id: uuid.UUID, status: OrderStatus) -> Order:
-        order = db.query(Order).filter(Order.order_id == order_id).first()
+    async def update_order_status(db: Session, order_id: str, status: str):
+        order = db.query(Order).filter(Order.id == order_id).first()
         if not order:
             raise HTTPException(status_code=404, detail="Order not found")
         
         order.status = status
         db.commit()
-        db.refresh(order)
+        
+        # Prepare order update message
+        order_data = {
+            "type": "order_update",
+            "data": {
+                "order_id": str(order.id),
+                "status": status,
+                "updated_at": order.updated_at.isoformat()
+            }
+        }
+        
+        # Send update to connected client
+        await manager.send_personal_message(
+            message=order_data,
+            user_id=str(order.user_id)
+        )
+        
         return order
     
 

@@ -5,7 +5,7 @@ from sqlalchemy import Table, ForeignKey, Column, Integer, Float, DateTime, Bool
 from sqlalchemy.orm import relationship
 from sqlalchemy.dialects.postgresql import UUID
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 
 class UserRole(str, enum.Enum):
     ADMIN = "admin"
@@ -89,12 +89,12 @@ class Order(Base):
     order_id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     user_id = Column(UUID(as_uuid=True), ForeignKey('users.user_id'))
     total_amount = Column(Float, nullable=False)
-    order_date = Column(DateTime, default=datetime.utcnow)
+    order_date = Column(DateTime, default=lambda: datetime.now(timezone.utc))
     status = Column(SQLAlchemyEnum(OrderStatus), default=OrderStatus.RECEIVED)
     delivery_address = Column(String, nullable=False)
     contact_number = Column(String, nullable=False)
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc)) 
+    updated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc)) 
     
 
     items = relationship("OrderItem", back_populates="order")

@@ -2,14 +2,14 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from app.core.database import engine, Base
-from app.apis import auth, pizza, orders, coupon, toppings, payment
+from app.apis import auth, pizza, orders, coupon, toppings, payment, websocket
 
 app = FastAPI(title="Pizza Ordering System")
 
 # Expanded CORS configuration
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allow_headers=[
@@ -34,6 +34,7 @@ app.include_router(orders.router, prefix="/api", tags=["orders"])
 app.include_router(coupon.router, prefix="/api", tags=["coupons"])
 app.include_router(toppings.router, prefix="/api", tags=["toppings"])
 app.include_router(payment.router, prefix="/api", tags=["payment"])
+app.include_router(websocket.router, prefix="/api", tags=["websocket"])
 
 if __name__ == "__main__":
     import uvicorn

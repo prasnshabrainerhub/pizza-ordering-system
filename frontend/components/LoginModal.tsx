@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import React, { useState } from 'react';
 import { X } from 'lucide-react';
 import { SignUpModal } from './SignUpModel';
@@ -20,6 +21,7 @@ interface LoginResponse {
 }
 
 export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLoginSuccess }) => {
+  const { t } = useTranslation();
   const [isSignUpModalOpen, setIsSignUpModalOpen] = useState(false);
   const [formData, setFormData] = useState({
     email: '',

@@ -1,0 +1,35 @@
+{
+    "pizza_names": {
+      "margherita": "Margherita",
+      "pepperoni": "Pepperoni",
+      "hawaiian": "Hawaiian",
+      "bbq_chicken": "BBQ Chicken",
+      "veggie_supreme": "Veggie Supreme"
+    },
+    "order_details": {
+      "title": "Order Details",
+      "total_price": "Total Price",
+      "items": "Items",
+      "quantity": "Quantity",
+      "checkout": "Checkout",
+      "confirm_order": "Confirm Order",
+      "delivery_address": "Delivery Address",
+      "payment_method": "Payment Method"
+    },
+    "errors": {
+      "empty_cart": "Your cart is empty.",
+      "invalid_payment": "The payment method is invalid.",
+      "address_required": "Please provide a delivery address.",
+      "quantity_exceeds_stock": "The quantity exceeds available stock."
+    },
+    "success_messages": {
+      "order_placed": "Your order has been placed successfully!",
+      "payment_successful": "Payment processed successfully."
+    },
+    "buttons": {
+      "add_to_cart": "Add to Cart",
+      "remove_from_cart": "Remove from Cart",
+      "continue_shopping": "Continue Shopping"
+    }
+  }
+  

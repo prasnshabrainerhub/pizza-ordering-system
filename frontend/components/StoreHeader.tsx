@@ -1,7 +1,10 @@
+import { useTranslation } from 'react-i18next';
 import React from 'react';
 import { Store, Phone, Search, MenuIcon } from 'lucide-react';
 
 export const StoreHeader = () => {
+  const { t } = useTranslation();
+
   return (
     <div className="bg-white p-4 flex gap-4">
       {/* First Box */}

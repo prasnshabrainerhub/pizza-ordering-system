@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Loader2 } from 'lucide-react';
@@ -19,6 +20,7 @@ interface CartPromotionsProps {
 }
 
 const CartPromotions: React.FC<CartPromotionsProps> = ({ coupons, onApplyCoupon, loading = false }) => {
+  const { t } = useTranslation();
   const [showAllCoupons, setShowAllCoupons] = useState(false);
   
   if (loading) {

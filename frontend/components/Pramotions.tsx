@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import React, { useState, useEffect } from 'react';
 import { Loader2 } from 'lucide-react';
 
@@ -12,6 +13,7 @@ interface Coupon {
 }
 
 export const Promotions: React.FC = () => {
+  const { t } = useTranslation();
   const [coupons, setCoupons] = useState<Coupon[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

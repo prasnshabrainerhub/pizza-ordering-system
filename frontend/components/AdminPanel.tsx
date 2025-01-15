@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import React, { useState } from 'react';
 import { Pizza, History, Sandwich, Tag } from 'lucide-react';
 
@@ -6,6 +7,8 @@ interface AdminPanelProps {
 }
 
 export const AdminPanel: React.FC<AdminPanelProps> = ({ onViewChange }) => {
+  const { t } = useTranslation();
+  
   return (
     <div className="bg-white p-4 rounded-lg shadow-md mb-6">
       <h2 className="text-xl font-semibold mb-4 text-red-500">Admin Controls</h2>

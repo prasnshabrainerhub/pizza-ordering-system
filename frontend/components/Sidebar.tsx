@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import React, { useState, useEffect } from 'react';
 import { PIZZA_CATEGORIES } from '../types/types';
 import { ChevronDown, ChevronRight } from 'lucide-react';
@@ -10,6 +11,7 @@ interface Pizza {
 }
 
 export const Sidebar = () => {
+  const { t } = useTranslation();
   const [pizzas, setPizzas] = useState<Pizza[]>([]);
   const [expandedCategories, setExpandedCategories] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);

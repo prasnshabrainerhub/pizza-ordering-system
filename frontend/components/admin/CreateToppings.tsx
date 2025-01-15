@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import React, { useState, useEffect } from 'react';
 import { Pizza, Plus, Edit2, Trash2 } from 'lucide-react';
 import { UUID } from 'crypto';
@@ -16,6 +17,7 @@ interface ToppingFormData {
 }
 
 export const ToppingManagement: React.FC = () => {
+  const { t } = useTranslation();
   const [toppings, setToppings] = useState<Topping[]>([]);
   const [isAddingTopping, setIsAddingTopping] = useState(false);
   const [editingTopping, setEditingTopping] = useState<Topping | null>(null);

@@ -110,7 +110,19 @@ const OrderSuccessPage = () => {
               {orderDetails && (
                 <>
                   <p className="text-gray-600 mb-2"><strong>Order ID:</strong> {orderDetails.order_id}</p>
-                  <p className="text-gray-600 mb-2"><strong>Order Date:</strong> {new Date(orderDetails.order_date).toLocaleString()}</p>
+                  <p className="text-gray-600 mb-2">
+                    <strong>Order Date:</strong> {
+                      new Date(orderDetails.order_date).toLocaleString('en-IN', {
+                        timeZone: 'Asia/Kolkata',  // Since you're using ₹ symbol, assuming Indian timezone
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        hour12: true
+                      })
+                    }
+                  </p>
                   <p className="text-gray-600 mb-2"><strong>Status:</strong> {orderDetails.status}</p>
                 </>
               )}

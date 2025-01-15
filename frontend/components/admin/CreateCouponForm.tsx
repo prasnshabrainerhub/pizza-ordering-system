@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import React, { useState, useEffect } from 'react';
 import { Plus, Edit2, Trash2 } from 'lucide-react';
 import { DiscountType } from '../../types/types';
@@ -29,6 +30,7 @@ interface CouponFormData {
 }
 
 export const CouponManagement: React.FC = () => {
+  const { t } = useTranslation();
   const [coupons, setCoupons] = useState<Coupon[]>([]);
   const [isAddingCoupon, setIsAddingCoupon] = useState(false);
   const [editingCoupon, setEditingCoupon] = useState<Coupon | null>(null);

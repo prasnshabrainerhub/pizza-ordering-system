@@ -2,11 +2,11 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 import jwt
 from app.core.database import get_db
-from app.schema.order import OrderCreate, OrderStatusUpdate
+from app.schema.order import OrderCreate
 from app.services.order_service import OrderService
 from app.core.config import settings
 from app.core.security import JWTBearer
-from app.models.models import UserRole, Order
+from app.models.models import UserRole, Order, User
 from uuid import UUID
 import uuid
 
@@ -36,7 +36,6 @@ def get_order(
 
     return order
 
-
 @router.get("/orders/history")
 def get_order_history(
     db: Session = Depends(get_db),
@@ -46,6 +45,7 @@ def get_order_history(
     if payload.get("role") != UserRole.ADMIN:
          raise HTTPException(status_code=403, detail="Only admins can get order history")
     return db.query(Order).all()
+
 
 @router.post("/orders")
 def create_order(
@@ -84,14 +84,11 @@ def create_order(
             detail=str(e)
         )   
 
-@router.patch("/orders/{order_id}/status")
-def update_order_status(
-    order_id: UUID,
-    status_update: OrderStatusUpdate,
+@router.put("/orders/{order_id}/status")
+async def update_order_status(
+    order_id: str,
+    status: str,
     db: Session = Depends(get_db),
-    token: str = Depends(JWTBearer())
+    current_user: User = Depends(get_db)
 ):
-    payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
-    if payload.get("role") != UserRole.ADMIN:
-         raise HTTPException(status_code=403, detail="Only admins can update order status")
-    return OrderService.update_order_status(db, order_id, status_update.status)
+    return await OrderService.update_order_status(db, order_id, status)

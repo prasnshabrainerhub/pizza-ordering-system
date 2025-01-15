@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { CartItem } from '../types/types';
 
@@ -20,6 +21,7 @@ const CartContext = createContext<CartContextType>({
 });
 
 export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { t } = useTranslation();
   const [items, setItems] = useState<CartItem[]>([]);
   const [currentUser, setCurrentUser] = useState<string | null>(null);
 

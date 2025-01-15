@@ -1,7 +1,9 @@
+import { useTranslation } from 'react-i18next';
 import React, { useState, useEffect } from 'react';
 import { Pencil, Trash2 } from 'lucide-react';
 
 export const ManagePizzas: React.FC = () => {
+  const { t } = useTranslation();
   const [pizzas, setPizzas] = useState<Pizza[]>([]);
 
   useEffect(() => {

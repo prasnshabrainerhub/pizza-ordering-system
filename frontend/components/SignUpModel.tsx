@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import React, { useState } from 'react';
 import { X } from 'lucide-react';
 import { authApi } from '../utils/auth';
@@ -14,6 +15,7 @@ interface ApiError {
 }
 
 export const SignUpModal: React.FC<SignUpModalProps> = ({ isOpen, onClose }) => {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState({
     email: '',
     username: '',

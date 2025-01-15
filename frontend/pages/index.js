@@ -3,41 +3,29 @@ import Image from 'next/image';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/swiper-bundle.min.css';
 import {Navigation} from "swiper";
+import { Header } from '../components/Header';
 
 const Home = () => {
   return (
     <div className="relative min-h-screen w-full">
+      <div>
+        <Header />
+      </div>
+
       {/* Background Image with Light Overlay */}
-      <div className="absolute top-0 left-0 w-full h-[110vh] bg-cover bg-center z-0">
+      <div className="absolute top-0 left-0 w-full h-[110vh] bg-cover bg-blend-lighten bg-center z-0">
         <div className="w-full h-full bg-black opacity-40"></div> {/* Light Overlay */}
-        <Image
-          src="/Homemain.png"
-          alt="Delicious Pizza"
-          fill
-          style={{ objectFit: "cover" }}
+          <Image
+            src="/Homemain.png"
+            alt="Delicious Pizza"
+            fill
+            style={{ 
+              objectFit: "cover", 
+              filter: "blur(8px)" // Keeps the blur effect
+            }}
         />
       </div>
 
-      {/* Header */}
-      <header className="bg-red-500 text-white py-4 z-10 relative">
-        <nav className="container mx-auto flex justify-between items-center px-4">
-          <h1 className="text-2xl font-bold">Pizza Bliss</h1>
-          <ul className="flex space-x-6 text-lg">
-            <li>
-              <Link href="/dashboard">Home</Link>
-            </li>
-            <li>
-              <Link href="/dashboard">Menu</Link>
-            </li>
-            <li>
-              <Link href="/dashboard">About</Link>
-            </li>
-            <li>
-              <Link href="/dashboard">Contact</Link>
-            </li>
-          </ul>
-        </nav>
-      </header>
 
       {/* Centered Text Content */}
       <div className="relative z-10 flex items-center justify-center min-h-screen">
