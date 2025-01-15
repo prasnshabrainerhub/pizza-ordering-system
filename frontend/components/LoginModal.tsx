@@ -107,7 +107,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLogin
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-red-500 text-white py-2 rounded-lg hover:bg-red-600 transition-colors disabled:bg-red-300"
+              className="w-full bg-green-500 text-white py-2 rounded-lg hover:bg-green-600 transition-colors disabled:bg-green-300"
             >
               {isLoading ? 'Logging in...' : 'Login'}
             </button>

@@ -63,3 +63,13 @@ export interface CartItem {
   price: number;
   imageUrl: string;
 }
+
+export const PIZZA_CATEGORIES = [
+  { id: 'buy1get4', name: 'Buy 1 Get 4', icon: '🍕' },
+  { id: 'vegPizza', name: 'Veg Pizza', icon: '🍕' },
+  { id: 'nonVeg', name: 'Non Veg', icon: '🥩' },
+  { id: 'classicMania', name: 'Classic Mania', icon: '🏆' },
+  { id: 'drinks', name: 'Drinks', icon: '🍹' },
+] as const;
+
+export type PizzaCategory = typeof PIZZA_CATEGORIES[number]['id'];

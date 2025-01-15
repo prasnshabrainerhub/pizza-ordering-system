@@ -41,8 +41,8 @@ const CartPromotions: React.FC<CartPromotionsProps> = ({ coupons, onApplyCoupon,
   
   return (
     <>
-      <div className="bg-white text-black rounded-lg shadow p-6">
-        <div className="flex items-center text-black gap-2 mb-4">
+      <div className="bg-white rounded-lg shadow p-6">
+        <div className="flex items-center gap-2 mb-4">
           <span className="p-1 bg-black text-white rounded">%</span>
           <span className="font-medium">
             {mainCoupon.description || (mainCoupon.discount_type === 'PERCENTAGE'
@@ -68,7 +68,7 @@ const CartPromotions: React.FC<CartPromotionsProps> = ({ coupons, onApplyCoupon,
       </div>
 
       <Dialog open={showAllCoupons} onOpenChange={setShowAllCoupons}>
-        <DialogContent className="max-w-2xl text-black">
+        <DialogContent className="max-w-2xl">
           <DialogHeader>
             <DialogTitle>Available Promotions</DialogTitle>
           </DialogHeader>
@@ -76,7 +76,7 @@ const CartPromotions: React.FC<CartPromotionsProps> = ({ coupons, onApplyCoupon,
             {coupons.map((coupon) => (
               <div
                 key={coupon.coupon_id}
-                className="bg-white text-black border rounded-lg p-4 hover:shadow-md transition-shadow"
+                className="bg-white border rounded-lg p-4 hover:shadow-md transition-shadow"
               >
                 <div className="bg-green-500 text-white text-center rounded px-2 py-1 text-sm inline-block mb-2">
                   {coupon.code}

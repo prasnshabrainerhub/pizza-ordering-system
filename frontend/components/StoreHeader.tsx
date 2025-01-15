@@ -1,46 +1,54 @@
 import React from 'react';
-import { MapPin, Phone, Search } from 'lucide-react';
+import { Store, Phone, Search, MenuIcon } from 'lucide-react';
 
 export const StoreHeader = () => {
   return (
-    <div className="bg-white p-4 flex items-center justify-between border-b">
-      {/* Left side - Store Info */}
-      <div className="flex items-center gap-6">
-        <div className="flex items-start gap-2">
-          <MapPin className="text-gray-500 mt-1 flex-shrink-0" size={18} />
-          <div>
-            <h2 className="font-medium text-gray-800">Ahmedabad</h2>
-            <p className="text-sm text-gray-600">Shop 24 Maple Trade Center nr, Surdhara Cir, Thaltej, Ahmedabad, Gujarat 380054</p>
+    <div className="bg-white p-4 flex gap-4">
+      {/* First Box */}
+      <div className="flex-1 p-4 border rounded-lg shadow-sm">
+        <div className="flex flex-col gap-2">
+          <div className="flex items-start gap-2">
+            <Store className="text-gray-500 mt-1" size={16} />
+            <div>
+              <h2 className="font-bold text-gray-800">Ahmedabad</h2>
+              <p className="text-xs text-gray-500">
+                Shop 24 Maple Trade Center nr, Surdhara Cir, Thaltej, Ahmedabad, Gujarat 380054
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <Phone className="text-gray-500" size={14} />
+            <span className="text-sm text-gray-500">9809270404</span>
+          </div>
+          <div className="mt-1">
+            <span className="bg-green-50 text-green-600 px-3 py-1 rounded-full text-xs border border-green-200">
+              Open till 1 AM
+            </span>
           </div>
         </div>
-        <div className="flex items-center gap-2">
-          <Phone className="text-gray-500" size={18} />
-          <span className="text-gray-600">123-456-789</span>
-        </div>
       </div>
 
-      {/* Center - Open Status */}
-      <div className="flex items-center gap-4">
-        <div className="bg-green-50 text-green-600 px-3 py-1 rounded-full text-sm border border-green-200">
-          <span className="font-medium">OPEN</span>
-          <span className="text-xs ml-1">Open until 1:00 AM</span>
-        </div>
-      </div>
-
-      {/* Right side - Search */}
-      <div className="flex items-center gap-4">
+      {/* Second Box */}
+      <div className="flex-1 p-4 border rounded-lg shadow-sm">
         <div className="relative">
           <input
             type="text"
             placeholder="Search Menu"
-            className="w-120 px-6 py-3 pl-10 border rounded-md focus:outline-none focus:ring-1 focus:ring-green-500 text-sm"
+            className="w-full px-4 py-2 pl-10 border rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-gray-300"
           />
           <Search
-            size={18}
+            size={16}
             className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
           />
         </div>
       </div>
+
+      {/* Menu Icon */}
+      <button className="p-2 border rounded-lg hover:bg-gray-50">
+        <MenuIcon size={20} className="text-gray-600" />
+      </button>
     </div>
   );
 };
+
+export default StoreHeader;

@@ -7,6 +7,7 @@ interface CartContextType {
   removeFromCart: (pizzaId: string) => void;
   updateQuantity: (pizzaId: string, quantity: number) => void;
   clearCart: () => void;
+  setCurrentUser: (userId: string | null) => void;
 }
 
 const CartContext = createContext<CartContextType>({
@@ -15,40 +16,54 @@ const CartContext = createContext<CartContextType>({
   removeFromCart: () => {},
   updateQuantity: () => {},
   clearCart: () => {},
+  setCurrentUser: () => {},
 });
 
 export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [items, setItems] = useState<CartItem[]>([]);
+  const [currentUser, setCurrentUser] = useState<string | null>(null);
 
-  // Load cart from localStorage on initial render
   useEffect(() => {
-    const savedCart = localStorage.getItem('cart');
-    if (savedCart) {
-      try {
-        setItems(JSON.parse(savedCart));
-      } catch (e) {
-        console.error('Error loading cart from localStorage:', e);
+    // Load user and cart data after component mounts
+    if (typeof window !== 'undefined') {
+      const storedUser = window.localStorage.getItem('currentUser');
+      if (storedUser) {
+        const userId = JSON.parse(storedUser);
+        setCurrentUser(userId);
+        
+        const userCart = window.localStorage.getItem(`cart_${userId}`);
+        if (userCart) {
+          try {
+            setItems(JSON.parse(userCart));
+          } catch (e) {
+            console.error('Error loading cart:', e);
+          }
+        }
       }
     }
   }, []);
 
-  // Save cart to localStorage whenever it changes
+  // Save cart whenever items change
   useEffect(() => {
-    localStorage.setItem('cart', JSON.stringify(items));
-  }, [items]);
+    if (typeof window !== 'undefined' && currentUser) {
+      window.localStorage.setItem(`cart_${currentUser}`, JSON.stringify(items));
+    }
+  }, [items, currentUser]);
 
   const addToCart = (newItem: CartItem) => {
     setItems(currentItems => {
       const existingItemIndex = currentItems.findIndex(item => 
         item.pizzaId === newItem.pizzaId &&
         item.size === newItem.size &&
-        item.variant === newItem.variant &&
-        JSON.stringify(item.toppings.sort()) === JSON.stringify(newItem.toppings.sort())
+        item.variant === newItem.variant
       );
 
-      if (existingItemIndex > -1) {
+      if (existingItemIndex !== -1) {
         const updatedItems = [...currentItems];
-        updatedItems[existingItemIndex].quantity += newItem.quantity;
+        updatedItems[existingItemIndex] = {
+          ...updatedItems[existingItemIndex],
+          quantity: updatedItems[existingItemIndex].quantity + newItem.quantity
+        };
         return updatedItems;
       }
 
@@ -72,7 +87,37 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const clearCart = () => {
     setItems([]);
-    localStorage.removeItem('cart');
+    if (typeof window !== 'undefined' && currentUser) {
+      window.localStorage.removeItem(`cart_${currentUser}`);
+    }
+  };
+
+  const handleUserChange = (userId: string | null) => {
+    if (userId !== currentUser) {
+      setCurrentUser(userId);
+      
+      if (userId) {
+        // Load new user's cart
+        if (typeof window !== 'undefined') {
+          const userCart = window.localStorage.getItem(`cart_${userId}`);
+          if (userCart) {
+            try {
+              setItems(JSON.parse(userCart));
+              return;
+            } catch (e) {
+              console.error('Error loading cart:', e);
+            }
+          }
+        }
+        setItems([]); // Set empty cart if no saved cart exists
+      } else {
+        // Clear cart on logout
+        setItems([]);
+        if (typeof window !== 'undefined') {
+          window.localStorage.removeItem('currentUser');
+        }
+      }
+    }
   };
 
   const value = {
@@ -81,6 +126,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     removeFromCart,
     updateQuantity,
     clearCart,
+    setCurrentUser: handleUserChange,
   };
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;

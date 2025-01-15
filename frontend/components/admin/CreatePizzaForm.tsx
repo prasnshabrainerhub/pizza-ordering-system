@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, Edit2, Trash2, Upload } from 'lucide-react';
 import Image from 'next/image';
+import { PIZZA_CATEGORIES } from '../../types/types';
 
 enum PizzaSizeEnum {
     SMALL = 'small',
@@ -36,7 +37,7 @@ export const PizzaManagement: React.FC = () => {
         name: '',
         description: '',
         base_price: 0,
-        category: '',
+        category: PIZZA_CATEGORIES[0].id,
         sizes: [
             { size: PizzaSizeEnum.SMALL, price: 0 },
             { size: PizzaSizeEnum.MEDIUM, price: 0 },
@@ -171,7 +172,7 @@ export const PizzaManagement: React.FC = () => {
             name: '',
             description: '',
             base_price: 0,
-            category: '',
+            category: PIZZA_CATEGORIES[0].id,
             sizes: [
                 { size: PizzaSizeEnum.SMALL, price: 0 },
                 { size: PizzaSizeEnum.MEDIUM, price: 0 },
@@ -266,13 +267,18 @@ export const PizzaManagement: React.FC = () => {
 
                         <div>
                             <label className="block text-sm font-medium text-gray-700">Category</label>
-                            <input
-                                type="text"
+                            <select
                                 value={formData.category}
                                 onChange={(e) => setFormData({ ...formData, category: e.target.value })}
                                 className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2"
                                 required
-                            />
+                            >
+                                {PIZZA_CATEGORIES.map(category => (
+                                <option key={category.id} value={category.id}>
+                                    {category.name}
+                                </option>
+                                ))}
+                            </select>
                         </div>
 
                         <div>

@@ -1,13 +1,22 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, validator
 from datetime import datetime
 from typing import List, Optional
-from app.models.models import PizzaSizeEnum
+from app.models.models import PizzaSizeEnum, PizzaCategory
 
 class PizzaBase(BaseModel):
     name: str
     description: Optional[str] = None
     base_price: float
-    category: str
+    category: PizzaCategory
+
+    @validator('category')
+    def validate_category(cls, v):
+        if not isinstance(v, PizzaCategory):
+            try:
+                return PizzaCategory(v)
+            except ValueError:
+                raise ValueError(f"Invalid category. Must be one of: {', '.join([c.value for c in PizzaCategory])}")
+        return v
 
 class PizzaSizeCreate(BaseModel):
     size: PizzaSizeEnum

@@ -10,6 +10,7 @@ import { PizzaManagement } from '../components/admin/CreatePizzaForm';
 import { OrderHistory } from '../components/admin/OrderHistory';
 import { CouponManagement } from '../components/admin/CreateCouponForm';
 import { ToppingManagement } from '../components/admin/CreateToppings';
+import { PIZZA_CATEGORIES } from '../types/types';
 
 const Dashboard: React.FC = () => {
   const [pizzas, setPizzas] = useState<Pizza[]>([]);
@@ -139,19 +140,24 @@ const Dashboard: React.FC = () => {
         ) : (
           <>
             <Promotions />
-            <div className="mt-8">
-              <h2 className="text-xl font-semibold mb-4">Buy 1 Get 4</h2>
-              {loading ? (
-                <div>Loading...</div>
-              ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {pizzas.map((pizza) => (
-                    //@ts-ignore
-                    <PizzaCard key={pizza.id} pizza={pizza} />
-                  ))}
+            {PIZZA_CATEGORIES.map(category => {
+              const categoryPizzas = pizzas.filter(pizza => pizza.category === category.id);
+              if (categoryPizzas.length === 0) return null;
+              
+              return (
+                <div key={category.id} className="mt-8">
+                  <h2 className="text-xl font-semibold mb-4">
+                    {category.icon} {category.name}
+                  </h2>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {categoryPizzas.map((pizza) => (
+                      //@ts-ignore
+                      <PizzaCard key={pizza.id} pizza={pizza} />
+                    ))}
+                  </div>
                 </div>
-              )}
-            </div>
+              );
+            })}
           </>
         )}
       </main>

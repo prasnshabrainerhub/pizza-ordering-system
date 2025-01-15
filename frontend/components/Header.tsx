@@ -1,9 +1,20 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { ShoppingCart, LogIn, MapPin, MoreVertical, Home, User } from 'lucide-react';
+import { ShoppingCart, LogIn, MoreVertical, Home, User, Package } from 'lucide-react';
 import { LoginModal } from './LoginModal';
 import { useRouter } from 'next/navigation';
 import { useCart } from '../components/CartContext';
 import Link from 'next/link';
+
+const FontImports = () => (
+  <style jsx global>{`
+    @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Inter:wght@400;500;600&display=swap');
+  `}</style>
+);
+
+interface UserData {
+  username: string;
+  role: 'user' | 'admin';
+}
 
 const decodeJWT = (token: string) => {
   try {
@@ -19,18 +30,14 @@ const decodeJWT = (token: string) => {
   }
 };
 
-// Add interface for user data
-interface UserData {
-  email: string;
-  role: 'user' | 'admin';
-}
-
 export const Header = () => {
   const router = useRouter();
   const { state } = useCart();
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
+  const [isMainDropdownOpen, setIsMainDropdownOpen] = useState(false);
+  const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
+  const mainDropdownRef = useRef<HTMLDivElement>(null);
+  const userDropdownRef = useRef<HTMLDivElement>(null);
   const [userData, setUserData] = useState<UserData | null>(null);
 
   useEffect(() => {
@@ -39,21 +46,26 @@ export const Header = () => {
       if (accessToken) {
         const decodedToken = decodeJWT(accessToken);
         if (decodedToken) {
-          setUserData(decodedToken);
+          // Update to use the correct fields from your JWT
+          setUserData({
+            username: decodedToken.username || '',
+            role: decodedToken.role || 'user'
+          });
         }
       }
     };
-
     getUserData();
   }, []);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setIsDropdownOpen(false);
+      if (mainDropdownRef.current && !mainDropdownRef.current.contains(event.target as Node)) {
+        setIsMainDropdownOpen(false);
+      }
+      if (userDropdownRef.current && !userDropdownRef.current.contains(event.target as Node)) {
+        setIsUserDropdownOpen(false);
       }
     };
-
     document.addEventListener('mousedown', handleClickOutside);
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
@@ -68,103 +80,126 @@ export const Header = () => {
     localStorage.removeItem('access_token');
     localStorage.removeItem('refresh_token');
     setUserData(null);
+    setIsUserDropdownOpen(false);
+    
+    // Force a page refresh and redirect to home
+    if (typeof window !== 'undefined') {
+      window.location.href = '/dashboard';
+    }
+  };
+
+  const handleOrdersClick = () => {
+    router.push('/orders');
+    setIsUserDropdownOpen(false);
   };
 
   return (
     <>
-      <header className="bg-red-500 text-white py-4 z-10 relative">
-        <nav className="container mx-auto flex justify-between items-center px-4">
+      <FontImports />
+      <header className="bg-white text-gray-800 py-4 shadow-lg border-b border-gray-100 sticky top-0 z-50">
+        <nav className="container mx-auto flex justify-between items-center px-6">
           {/* Logo and Home Button Section */}
-          <div className="flex items-center gap-8">
+          <div className="flex items-center gap-12">
             <button 
-              className="flex items-center gap-2 hover:text-gray-200" 
+              className="flex items-center gap-2 hover:text-gray-600 transition-colors group" 
               onClick={() => router.push('/')}
             >
-              <Home size={24} className="text-white" />
-              <span className="text-lg">Home</span>
+              <Home size={24} className="text-gray-800 group-hover:scale-110 transition-transform" />
             </button>
             <h1 
-              className="text-2xl font-bold cursor-pointer" 
+              className="text-4xl font-bold cursor-pointer text-gray-900 hover:text-gray-700 transition-colors font-['Dancing_Script'] hover:scale-105 transform transition-transform" 
               onClick={() => router.push('/')}
             >
               Pizza Bliss
             </h1>
           </div>
-
           {/* Navigation Links */}
-          <ul className="flex items-center gap-8 text-lg">
-            <li>
-              <button className="flex items-center gap-2 hover:text-gray-200">
-                <MapPin size={24} />
-                <span>Change Store</span>
-              </button>
-            </li>
+          <ul className="flex items-center gap-8 font-['Inter']">
             {!userData ? (
               <li>
                 <button 
-                  className="flex items-center gap-2 hover:text-gray-200"
+                  className="flex items-center justify-center w-10 h-10 hover:bg-gray-100 rounded-full transition-all transform hover:scale-110"
                   onClick={() => setIsLoginModalOpen(true)}
+                  title="Login"
                 >
-                  <LogIn size={24} />
-                  <span>Login</span>
+                  <LogIn size={24} className="text-gray-700" />
                 </button>
               </li>
             ) : null}
-            <li className="ml-auto gap-8">
+            <li>
               <button 
                 onClick={handleCartClick}
-                className="flex items-center gap-2 bg-white text-red-500 px-4 py-2 rounded-lg hover:bg-gray-100 relative"
+                className="flex items-center justify-center w-10 h-10 hover:bg-gray-100 rounded-full transition-all transform hover:scale-110 relative"
+                title="Cart"
               >
-                <ShoppingCart size={24} />
-                <span>Cart</span>               
-                  <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                  </span>
+                <ShoppingCart size={24} className="text-gray-900" />              
+                <span className="absolute -top-1 -right-1 bg-gray-900 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                  0
+                </span>
               </button>
             </li>
             {userData && (
               <li>
-                <div className="flex items-center gap-2 px-3 py-2 bg-white text-red-500 rounded-lg">
-                  <User size={20} />
-                  <span>{userData.email}</span>
-                  {userData.role === 'admin' && (
-                    <span className="text-xs bg-red-500 text-white px-2 py-1 rounded">Admin</span>
+                <div className="relative" ref={userDropdownRef}>
+                  <button 
+                    onClick={() => setIsUserDropdownOpen(!isUserDropdownOpen)}
+                    className="flex items-center gap-3 px-4 py-2 bg-gray-100 text-gray-800 rounded-lg hover:bg-gray-200 transition-all hover:scale-105"
+                  >
+                    <User size={20} />
+                    <span className="text-sm font-medium">Hi, {userData.username}</span>
+                    {userData.role === 'admin' && (
+                      <span className="text-xs bg-gray-900 text-white px-2 py-0.5 rounded">Admin</span>
+                    )}
+                  </button>
+                  
+                  {isUserDropdownOpen && (
+                    <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl z-50 border">
+                      <div className="py-1">
+                        <button 
+                          onClick={handleOrdersClick}
+                          className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 w-full text-left transition-colors"
+                        >
+                          <Package size={16} />
+                          Orders
+                        </button>
+                        <button 
+                          onClick={handleLogout}
+                          className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 w-full text-left transition-colors"
+                        >
+                          <span>🚪</span>
+                          Logout
+                        </button>
+                      </div>
+                    </div>
                   )}
                 </div>
               </li>
             )}
-            <div className="relative" ref={dropdownRef}>
+            <div className="relative" ref={mainDropdownRef}>
               <button 
-                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                className="p-2 hover:bg-gray-100 rounded"
+                onClick={() => setIsMainDropdownOpen(!isMainDropdownOpen)}
+                className="flex items-center justify-center w-10 h-10 hover:bg-gray-100 rounded-full transition-all transform hover:scale-110"
+                title="Menu"
               >
-                <MoreVertical size={20} />
+                <MoreVertical size={24} />
               </button>
               
-              {isDropdownOpen && (
-                <div className="absolute right-0 justify-end mt-2 w-56 bg-white rounded shadow-lg z-50 border">
+              {isMainDropdownOpen && (
+                <div className="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-xl z-50 border">
                   <div className="py-1">
-                    {userData && (
-                      <button 
-                        onClick={handleLogout}
-                        className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left"
-                      >
-                        <span>🚪</span>
-                        Logout
-                      </button>
-                    )}
-                    <button className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left">
+                    <button className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 w-full text-left transition-colors">
                       <span>ℹ️</span>
                       About Us
                     </button>
-                    <button className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left">
+                    <button className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 w-full text-left transition-colors">
                       <span>🔒</span>
                       Privacy Policy
                     </button>
-                    <button className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left">
+                    <button className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 w-full text-left transition-colors">
                       <span>📋</span>
                       Terms and Conditions
                     </button>
-                    <button className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left">
+                    <button className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 w-full text-left transition-colors">
                       <span>💰</span>
                       Refund & Cancellation
                     </button>
@@ -175,7 +210,6 @@ export const Header = () => {
           </ul>
         </nav>
       </header>
-
       <LoginModal 
         isOpen={isLoginModalOpen}
         onClose={() => setIsLoginModalOpen(false)}

@@ -54,6 +54,13 @@ class PizzaSize(Base):
     price = Column(Float, nullable=False)
     pizza = relationship("Pizza", back_populates="sizes")
 
+class PizzaCategory(str, enum.Enum):
+    BUY1GET4 = "buy1get4"
+    VEG_PIZZA = "vegPizza"
+    NON_VEG = "nonVeg"
+    CLASSIC_MANIA = "classicMania"
+    DRINKS = "drinks"
+
 class Pizza(Base):
     __tablename__ = "pizzas"
     
@@ -62,7 +69,7 @@ class Pizza(Base):
     description = Column(String)
     base_price = Column(Float, nullable=False)
     image_url = Column(String)
-    category = Column(String, nullable=False)
+    category = Column(SQLAlchemyEnum(PizzaCategory), nullable=False)
     toppings = relationship("Topping", secondary=pizza_toppings, back_populates="pizzas")
     orders = relationship("OrderItem", back_populates="pizza")
     sizes = relationship("PizzaSize", back_populates="pizza")

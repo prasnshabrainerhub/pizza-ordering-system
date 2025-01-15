@@ -1,28 +1,140 @@
 import React from 'react';
+import { useState, useEffect } from 'react';
 import { useCart } from '../components/CartContext';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, ShoppingBag } from 'lucide-react';
 import Link from 'next/link';
 import { Header } from '../components/Header';
+import CartPromotions from "../components/CartPromotions";
 
 const Cart = () => {
   const { items, removeFromCart, updateQuantity } = useCart();
+  const [coupons, setCoupons] = useState([]);
+  const [loadingCoupons, setLoadingCoupons] = useState(true);
+  const [appliedCoupon, setAppliedCoupon] = useState(null);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    const fetchCoupons = async () => {
+      try {
+        const token = localStorage.getItem('access_token');
+        const response = await fetch('http://localhost:8000/api/coupons', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        
+        if (!response.ok) {
+          throw new Error('Failed to fetch coupons');
+        }
+        
+        const data = await response.json();
+        const activeCoupons = data.filter((coupon) => {
+          const now = new Date();
+          const validFrom = new Date(coupon.valid_from);
+          const validUntil = new Date(coupon.valid_until);
+          return validFrom <= now && now <= validUntil;
+        });
+        
+        setCoupons(activeCoupons);
+      } catch (err) {
+        console.error('Error fetching coupons:', err);
+      } finally {
+        setLoadingCoupons(false);
+      }
+    };
+    
+    fetchCoupons();
+  }, []);
 
   const calculateSubTotal = () => {
     return items.reduce((total, item) => total + (item.price * item.quantity), 0);
   };
 
+  const calculateDiscount = () => {
+    if (!appliedCoupon) return 0;
+
+    const subtotal = calculateSubTotal();
+
+    // Check minimum order value
+    if (subtotal < appliedCoupon.min_order_value) {
+      setError(`Minimum order value of ₹${appliedCoupon.min_order_value} required`);
+      setAppliedCoupon(null);
+      return 0;
+    }
+
+    let discount = 0;
+    if (appliedCoupon.discount_type === 'PERCENTAGE') {
+      discount = (subtotal * appliedCoupon.discount_value) / 100;
+      // Apply maximum discount limit for percentage discounts
+      if (appliedCoupon.max_discount && discount > appliedCoupon.max_discount) {
+        discount = appliedCoupon.max_discount;
+      }
+    } else {
+      // Fixed amount discount
+      discount = appliedCoupon.discount_value;
+    }
+
+    // Ensure discount doesn't exceed the subtotal
+    return Math.min(discount, subtotal);
+  };
+
+  const handleApplyCoupon = (coupon) => {
+    setError('');
+    
+    // Validate usage limit
+    if (coupon.usage_limit !== null && coupon.times_used >= coupon.usage_limit) {
+      setError('This coupon has reached its usage limit');
+      return;
+    }
+
+    // Validate minimum order value
+    if (calculateSubTotal() < coupon.min_order_value) {
+      setError(`Minimum order value of ₹${coupon.min_order_value} required`);
+      return;
+    }
+
+    setAppliedCoupon(coupon);
+  };
+
   const calculateGST = () => {
-    return calculateSubTotal() * 0.05;
+    return (calculateSubTotal() - calculateDiscount()) * 0.05;
   };
 
   const calculateRoundOff = () => {
-    const total = calculateSubTotal() + calculateGST();
+    const total = calculateSubTotal() - calculateDiscount() + calculateGST();
     return Math.round(total) - total;
   };
 
   const calculateTotal = () => {
-    return Math.round(calculateSubTotal() + calculateGST() + calculateRoundOff());
+    return Math.round(calculateSubTotal() - calculateDiscount() + calculateGST() + calculateRoundOff());
   };
+
+
+  if (items.length === 0) {
+    return (
+      <div className="min-h-screen bg-gray-100">
+        <Header />
+        <div className="max-w-6xl mx-auto p-4">
+          <Link href="/dashboard" className="inline-flex items-center gap-2 mb-6 text-green-600">
+            <ArrowLeft size={24} />
+            <span className="font-medium">Back</span>
+          </Link>
+
+          <div className="flex flex-col items-center justify-center bg-white rounded-lg shadow p-8">
+            <ShoppingBag size={64} className="text-gray-400 mb-4" />
+            <h2 className="text-2xl font-medium text-gray-800 mb-2">Your cart is empty</h2>
+            <p className="text-gray-600 mb-6">Add some delicious pizzas to your cart!</p>
+            <Link 
+              href="/dashboard" 
+              className="px-6 py-3 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition-colors"
+            >
+              Start Ordering
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -103,17 +215,11 @@ const Cart = () => {
           {/* Right side - Order Summary */}
           <div className="space-y-6">
             {/* Offers Box */}
-            <div className="bg-white rounded-lg shadow p-6">
-              <div className="flex items-center gap-2 mb-4">
-                <span className="p-1 bg-black text-white rounded">%</span>
-                <span className="font-medium">Buy 2 Get 1 Free</span>
-              </div>
-              <p className="text-sm text-gray-600">Select Minimum 3 Products.</p>
-              <div className="flex justify-between mt-4">
-                <button className="text-green-600 font-medium">Apply</button>
-                <button className="text-green-600 font-medium">View More Offers</button>
-              </div>
-            </div>
+            <CartPromotions 
+              coupons={coupons}
+              onApplyCoupon={handleApplyCoupon}
+              loading={loadingCoupons}
+            />
 
             {/* My Basket Box */}
             <div className="bg-white rounded-lg shadow p-6">
@@ -153,12 +259,11 @@ const Cart = () => {
                   </button>
                 </div>
                 <Link href="/checkout" className="w-full py-3 bg-green-600 text-white rounded-lg font-medium flex items-center justify-center gap-2">
-                <span>CHECKOUT!</span>
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                </svg>
-              </Link>
-
+                  <span>CHECKOUT!</span>
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </Link>
               </div>
             </div>
           </div>
