@@ -2,13 +2,30 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/router';
 import { X } from 'lucide-react';
 import { useCart } from '../components/CartContext';
+import { jwtDecode } from "jwt-decode";
 
 const Payment = () => {
   const router = useRouter();
   const { items, clearCart } = useCart();
-  const [showQR, setShowQR] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [loading, setLoading] = useState(false);
   const amount = router.query.amount || '662.00';
+
+  const getUserDetailsFromToken = () => {
+    const token = localStorage.getItem('access_token');
+    if (!token) return null;
+    
+    try {
+      const decoded = jwtDecode(token);
+      return {
+        address: decoded.delivery_address || '',
+        phone: decoded.contact_number || '',
+      };
+    } catch (error) {
+      console.error('Error decoding token:', error);
+      return null;
+    }
+  };
 
   const handleClose = () => {
     router.push('/checkout');
@@ -17,6 +34,15 @@ const Payment = () => {
   const createPaymentLink = async (paymentType) => {
     setLoading(true);
     try {
+      setIsLoading(true);
+      const token = localStorage.getItem('access_token');
+      const userDetails = getUserDetailsFromToken();
+
+      if (!token || !userDetails) {
+        alert('Please login to continue');
+        return;
+      }
+  
       const response = await fetch('http://localhost:8000/api/create-payment-link', {
         method: 'POST',
         headers: {
@@ -32,23 +58,21 @@ const Payment = () => {
             size: item.size?.toUpperCase() || 'MEDIUM',
             custom_toppings: item.toppings || []
           })),
-          delivery_address: "Test Address",
-          contact_number: "1234567890",
+          delivery_address: userDetails.address,
+          contact_number: userDetails.phone,
           notes: ""
         }),
       });
-
+  
       if (!response.ok) {
         const error = await response.json();
         throw new Error(error.detail || 'Failed to create payment link');
       }
-
+  
       const { url } = await response.json();
       if (url) {
-        // If it's a redirect URL from your payment provider
         window.location.href = url;
       } else if (response.ok) {
-        // If payment is processed directly
         router.push(`/order-success?order_id=${orderId}`);
       }
     } catch (error) {

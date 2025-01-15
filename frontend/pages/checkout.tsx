@@ -2,45 +2,53 @@ import { useRouter } from 'next/router';
 import { Header } from '@/components/Header';
 import { ArrowLeft, Check } from 'lucide-react';
 import { useCart } from '../components/CartContext';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { jwtDecode } from "jwt-decode";
 
 const Checkout = () => {
   const router = useRouter();
   const { items, clearCart } = useCart();
   const [isLoading, setIsLoading] = useState(false);
 
-  const calculateSubTotal = () => {
-    return items.reduce((total, item) => total + (item.price * item.quantity), 0);
-  };
-
-  const calculateGST = () => {
-    return calculateSubTotal() * 0.05;
-  };
-
-  const calculateRoundOff = () => {
-    const total = calculateSubTotal() + calculateGST();
-    return Math.round(total) - total;
+  const getUserDetailsFromToken = () => {
+    const token = localStorage.getItem('access_token');
+    if (!token) return null;
+    
+    try {
+      const decoded = jwtDecode(token);
+      return {
+        address: decoded.delivery_address || '',
+        phone: decoded.contact_number || '',
+      };
+    } catch (error) {
+      console.error('Error decoding token:', error);
+      return null;
+    }
   };
 
   const calculateTotal = () => {
-    return Math.round(calculateSubTotal() + calculateGST() + calculateRoundOff());
+    const subtotal = items.reduce((total, item) => total + (item.price * item.quantity), 0);
+    const gst = subtotal * 0.05;
+    const roundOff = Math.round(subtotal + gst) - (subtotal + gst);
+    return Math.round(subtotal + gst + roundOff);
   };
 
-  const handlePlaceOrder = async (paymentMethod: 'CASH' | 'ONLINE') => {
+  const handlePlaceOrder = async (paymentMethod) => {
     try {
       setIsLoading(true);
-  
-      const accessToken = localStorage.getItem('access_token');
-      if (!accessToken) {
-        alert('Please login to place an order');
+      const token = localStorage.getItem('access_token');
+      const userDetails = getUserDetailsFromToken();
+
+      if (!token || !userDetails) {
+        alert('Please login to continue');
         return;
       }
-  
+
       if (paymentMethod === 'ONLINE') {
         router.push(`/payment?amount=${calculateTotal()}`);
         return;
       }
-  
+
       const orderData = {
         order_items: items.map(item => ({
           pizza_id: item.pizzaId,
@@ -51,36 +59,32 @@ const Checkout = () => {
         payment_method: 'CASH',
         payment_status: 'PENDING',
         total_amount: calculateTotal(),
-        delivery_address: "Test Address",
-        contact_number: "1234567890",
+        delivery_address: userDetails.address,
+        contact_number: userDetails.phone,
         notes: ""
       };
-  
+
       const response = await fetch('http://localhost:8000/api/orders', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${accessToken}`,
+          'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify(orderData),
       });
-  
+
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.detail || 'Failed to place order');
       }
-  
-      const orderDetails = await response.json(); // Full order details from the backend
-      alert('Order placed successfully!');
-  
+
+      const orderDetails = await response.json();
       clearCart();
-  
-      // Redirect to order-success with all details
       router.push({
         pathname: '/order-success',
-        query: { ...orderDetails }, // Pass full order details in query params
+        query: { ...orderDetails },
       });
-  
+
     } catch (error) {
       console.error('Error:', error);
       alert(error.message || 'Failed to place order. Please try again.');
@@ -88,29 +92,8 @@ const Checkout = () => {
       setIsLoading(false);
     }
   };
-  
-  
 
-  // Check if cart is empty
-  if (items.length === 0) {
-    return (
-      <div className="min-h-screen bg-gray-50">
-        <Header />
-        <main className="max-w-5xl text-black mx-auto px-4 py-8">
-          <div className="text-center text-gray-500">
-            <h2 className="text-2xl font-semibold mb-4">Your cart is empty</h2>
-            <button
-              onClick={() => router.push('/dashboard')}
-              className="text-green-600 font-medium"
-            >
-              Continue Shopping
-            </button>
-          </div>
-        </main>
-      </div>
-    );
-  }
-
+  // Rest of your JSX remains the same...
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />

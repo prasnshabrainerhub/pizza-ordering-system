@@ -9,22 +9,15 @@ const OrderSuccessPage = () => {
   const [orderDetails, setOrderDetails] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const {query} = useRouter();
 
-  const {
-    order_id,
-    total_amount,
-    delivery_address,
-    contact_number,
-  } = query;
-
+  const { order_id, total_amount, delivery_address, contact_number } = router.query;
 
   useEffect(() => {
     const fetchOrderDetails = async () => {
       if (!router.isReady) return;
 
       const { order_id } = router.query;
-      console.log("Attempting to fetch order with ID:", order_id);
+      console.log("1. Order ID from query:", order_id);
 
       if (!order_id) {
         setError("No order ID provided");
@@ -34,30 +27,24 @@ const OrderSuccessPage = () => {
 
       try {
         const accessToken = localStorage.getItem('access_token');
-        console.log("Access token present:", !!accessToken);
-
         const response = await fetch(`http://localhost:8000/api/orders/${order_id}`, {
           headers: {
             'Authorization': `Bearer ${accessToken}`,
           },
         });
 
-        console.log("API Response status:", response.status);
-
         if (!response.ok) {
-          const errorData = await response.json();
-          console.log("API Error:", errorData);
-          throw new Error(`API error: ${response.status} - ${response.statusText}`);
+          throw new Error(`Failed to fetch order details`);
         }
 
         const data = await response.json();
-        console.log("Order data received:", data);
+        console.log("3. API Response data:", data);
         setOrderDetails(data);
       } catch (error) {
-        console.log("Detailed error:", error);
+        console.error("4. Error:", error);
         setError(error.message || "Failed to fetch order details");
       } finally {
-        setLoading(false);
+        setLoading(false);  // Make sure loading is set to false
       }
     };
 
@@ -119,44 +106,47 @@ const OrderSuccessPage = () => {
           {/* Order Details */}
           <div className="border-t border-gray-200 pt-6">
             <div className="mb-6">
-            <h3>Order Details</h3>
-            <p><strong>Order ID:</strong> {order_id}</p>
-            <p><strong>Total Amount:</strong> ₹{total_amount}</p>
-            <p><strong>Delivery Address:</strong> {delivery_address}</p>
-            <p><strong>Contact Number:</strong> {contact_number}</p>
-                </div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">Order Details</h3>
+              {orderDetails && (
+                <>
+                  <p className="text-gray-600 mb-2"><strong>Order ID:</strong> {orderDetails.order_id}</p>
+                  <p className="text-gray-600 mb-2"><strong>Order Date:</strong> {new Date(orderDetails.order_date).toLocaleString()}</p>
+                  <p className="text-gray-600 mb-2"><strong>Status:</strong> {orderDetails.status}</p>
+                </>
+              )}
+            </div>
 
             {orderDetails && (
-              <>
-                <div className="mb-6">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">Order Summary</h3>
-                  <div className="bg-gray-50 rounded p-4">
-                    <div className="flex justify-between mb-2">
-                      <span className="text-gray-600">Items Total</span>
-                      <span className="text-gray-900">₹{orderDetails.amount}</span>
-                    </div>
-                    <div className="flex justify-between mb-2">
-                      <span className="text-gray-600">Delivery Fee</span>
-                      <span className="text-gray-900">₹40</span>
-                    </div>
-                    <div className="border-t border-gray-200 mt-2 pt-2">
-                      <div className="flex justify-between font-semibold">
-                        <span className="text-gray-900">Total</span>
-                        <span className="text-gray-900">₹{orderDetails.amount + 40}</span>
-                      </div>
-                    </div>
+            <div className="mb-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">Order Summary</h3>
+              <div className="bg-gray-50 rounded p-4">
+                <div className="flex justify-between mb-2">
+                  <span className="text-gray-600">Items Total</span>
+                  <span className="text-gray-900">₹{Number(total_amount) - 40}</span>
+                </div>
+                <div className="flex justify-between mb-2">
+                  <span className="text-gray-600">Delivery Fee</span>
+                  <span className="text-gray-900">₹40</span>
+                </div>
+                <div className="border-t border-gray-200 mt-2 pt-2">
+                  <div className="flex justify-between font-semibold">
+                    <span className="text-gray-900">Total</span>
+                    <span className="text-gray-900">₹{total_amount}</span>
                   </div>
                 </div>
-
-                <div className="mb-6">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">Delivery Information</h3>
-                  <div className="bg-gray-50 rounded p-4">
-                    <p className="text-gray-600">Estimated delivery time: 30-45 minutes</p>
-                    <p className="text-gray-600">You will receive updates about your order via email</p>
-                  </div>
-                </div>
-              </>
+              </div>
+            </div>
             )}
+            
+            <div className="mb-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">Delivery Information</h3>
+              <div className="bg-gray-50 rounded p-4">
+                <p className="text-gray-600 mb-2"><strong>Delivery Address:</strong> {delivery_address}</p>
+                <p className="text-gray-600 mb-2"><strong>Contact Number:</strong> {contact_number}</p>
+                <p className="text-gray-600">Estimated delivery time: 30-45 minutes</p>
+                <p className="text-gray-600">You will receive updates about your order via email</p>
+              </div>
+            </div>
 
             <div className="flex flex-col sm:flex-row gap-4 mt-8">
               <button 
