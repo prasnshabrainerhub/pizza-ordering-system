@@ -21,6 +21,22 @@ def get_orders(
     user_id = uuid.UUID(payload["sub"])
     return OrderService.get_user_orders(db, user_id)
 
+@router.get("/orders/{order_id}")
+def get_order(
+    order_id: uuid.UUID,
+    db: Session = Depends(get_db),
+    token: str = Depends(JWTBearer())
+):
+    payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
+    user_id = uuid.UUID(payload["sub"])
+    order = OrderService.get_user_order_by_id(db, user_id, order_id)
+
+    if order is None:
+        raise HTTPException(status_code=404, detail="Order not found")
+
+    return order
+
+
 @router.get("/orders/history")
 def get_order_history(
     db: Session = Depends(get_db),
@@ -37,8 +53,36 @@ def create_order(
     db: Session = Depends(get_db),
     token: str = Depends(JWTBearer())
 ):
-    user_id = UUID(jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])["sub"])
-    return OrderService.create_order(db, order, user_id)   
+    try:
+        # Decode JWT token to get user_id
+        decoded_token = jwt.decode(
+            token, 
+            settings.SECRET_KEY, 
+            algorithms=[settings.ALGORITHM]
+        )
+        user_id = UUID(decoded_token["sub"])
+
+        # Create order using OrderService
+        return OrderService.create_order(
+            db=db,
+            order=order,
+            user_id=user_id
+        )
+    except jwt.InvalidTokenError:
+        raise HTTPException(
+            status_code=401,
+            detail="Invalid token"
+        )
+    except ValueError as ve:
+        raise HTTPException(
+            status_code=422,
+            detail="Invalid UUID format"
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=str(e)
+        )   
 
 @router.patch("/orders/{order_id}/status")
 def update_order_status(

@@ -12,9 +12,18 @@ class OrderService:
     @staticmethod
     def get_user_orders(db: Session, user_id: uuid.UUID) -> List[Order]:
         return db.query(Order).filter(Order.user_id == user_id).all()
+    
+    @staticmethod
+    def get_user_order_by_id(db: Session, user_id: uuid.UUID, order_id: uuid.UUID) -> Order:
+        return db.query(Order).filter(Order.user_id == user_id, Order.order_id == order_id).first()
+
 
     @staticmethod
-    def create_order(db: Session, order: OrderCreate, user_id: uuid.UUID) -> Order:
+    def create_order(
+        db: Session,
+        order: OrderCreate,
+        user_id: uuid.UUID
+    ) -> Order:
         try:
             # Create main order
             db_order = Order(
@@ -22,15 +31,14 @@ class OrderService:
                 total_amount=order.total_amount,
                 delivery_address=order.delivery_address,
                 contact_number=order.contact_number,
-                status=OrderStatus.RECEIVED
+                status=OrderStatus.RECEIVED,
             )
             db.add(db_order)
-            db.flush()
+            db.flush()  # Flush to get the order_id
 
             # Create order items
-            for item in order.order_items:  # Changed from items to order_items
+            for item in order.order_items:
                 if item.pizza_id:  # Only create item if pizza_id exists
-                    # Create order item
                     db_item = OrderItem(
                         order_id=db_order.order_id,
                         pizza_id=item.pizza_id,
@@ -43,11 +51,20 @@ class OrderService:
             db.commit()
             db.refresh(db_order)
 
+            # Notify user if email exists
             user = db.query(User).filter(User.user_id == user_id).first()
             if user and user.email:
                 notify_user(email=user.email, phone_number=user.phone_number)
 
             return db_order
+
+        except ValueError as ve:
+            db.rollback()
+            raise HTTPException(status_code=422, detail="Invalid UUID format")
+        except Exception as e:
+            db.rollback()
+            print(f"Error creating order: {str(e)}")  # Log the error
+            raise HTTPException(status_code=500, detail=str(e))
         
 
         except Exception as e:

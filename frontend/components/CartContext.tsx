@@ -24,15 +24,14 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [currentUser, setCurrentUser] = useState<string | null>(null);
 
   useEffect(() => {
-    // Load user and cart data after component mounts
     if (typeof window !== 'undefined') {
       const storedUser = window.localStorage.getItem('currentUser');
       if (storedUser) {
         const userId = JSON.parse(storedUser);
         setCurrentUser(userId);
-        
+
         const userCart = window.localStorage.getItem(`cart_${userId}`);
-        if (userCart) {
+        if (userCart && items.length === 0) {
           try {
             setItems(JSON.parse(userCart));
           } catch (e) {
@@ -43,16 +42,19 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }, []);
 
-  // Save cart whenever items change
   useEffect(() => {
     if (typeof window !== 'undefined' && currentUser) {
-      window.localStorage.setItem(`cart_${currentUser}`, JSON.stringify(items));
+      try {
+        window.localStorage.setItem(`cart_${currentUser}`, JSON.stringify(items));
+      } catch (e) {
+        console.error('Error saving cart:', e);
+      }
     }
   }, [items, currentUser]);
 
   const addToCart = (newItem: CartItem) => {
     setItems(currentItems => {
-      const existingItemIndex = currentItems.findIndex(item => 
+      const existingItemIndex = currentItems.findIndex(item =>
         item.pizzaId === newItem.pizzaId &&
         item.size === newItem.size &&
         item.variant === newItem.variant
@@ -62,7 +64,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const updatedItems = [...currentItems];
         updatedItems[existingItemIndex] = {
           ...updatedItems[existingItemIndex],
-          quantity: updatedItems[existingItemIndex].quantity + newItem.quantity
+          quantity: updatedItems[existingItemIndex].quantity + newItem.quantity,
         };
         return updatedItems;
       }
@@ -95,9 +97,8 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const handleUserChange = (userId: string | null) => {
     if (userId !== currentUser) {
       setCurrentUser(userId);
-      
+
       if (userId) {
-        // Load new user's cart
         if (typeof window !== 'undefined') {
           const userCart = window.localStorage.getItem(`cart_${userId}`);
           if (userCart) {
@@ -109,10 +110,9 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
             }
           }
         }
-        setItems([]); // Set empty cart if no saved cart exists
+        setItems([]); // Initialize empty cart if no saved cart exists
       } else {
-        // Clear cart on logout
-        setItems([]);
+        setItems([]); // Clear cart on logout
         if (typeof window !== 'undefined') {
           window.localStorage.removeItem('currentUser');
         }

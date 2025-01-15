@@ -42,11 +42,6 @@ export const StoreHeader = () => {
           />
         </div>
       </div>
-
-      {/* Menu Icon */}
-      <button className="p-2 border rounded-lg hover:bg-gray-50">
-        <MenuIcon size={20} className="text-gray-600" />
-      </button>
     </div>
   );
 };

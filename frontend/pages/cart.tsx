@@ -231,8 +231,18 @@ const Cart = () => {
                 </div>
                 <div className="flex justify-between">
                   <span>Discounts:</span>
-                  <span>₹0</span>
+                  <span className="text-green-600">-₹{calculateDiscount()}</span>
                 </div>
+                {error && (
+                  <div className="text-red-500 text-sm">
+                    {error}
+                  </div>
+                )}
+                {appliedCoupon && (
+                  <div className="text-green-600 text-sm">
+                    Coupon applied: {appliedCoupon.code}
+                  </div>
+                )}
                 <div className="flex justify-between">
                   <span>GST:</span>
                   <span>₹{calculateGST().toFixed(2)}</span>

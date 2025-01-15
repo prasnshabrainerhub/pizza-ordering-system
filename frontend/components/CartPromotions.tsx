@@ -68,7 +68,7 @@ const CartPromotions: React.FC<CartPromotionsProps> = ({ coupons, onApplyCoupon,
       </div>
 
       <Dialog open={showAllCoupons} onOpenChange={setShowAllCoupons}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-2xl text-black">
           <DialogHeader>
             <DialogTitle>Available Promotions</DialogTitle>
           </DialogHeader>

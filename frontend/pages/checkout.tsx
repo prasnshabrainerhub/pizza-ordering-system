@@ -29,7 +29,7 @@ const Checkout = () => {
   const handlePlaceOrder = async (paymentMethod: 'CASH' | 'ONLINE') => {
     try {
       setIsLoading(true);
-      
+  
       const accessToken = localStorage.getItem('access_token');
       if (!accessToken) {
         alert('Please login to place an order');
@@ -41,7 +41,6 @@ const Checkout = () => {
         return;
       }
   
-      // For Cash on Delivery
       const orderData = {
         order_items: items.map(item => ({
           pizza_id: item.pizzaId,
@@ -66,30 +65,42 @@ const Checkout = () => {
         body: JSON.stringify(orderData),
       });
   
-      if (!response.ok) throw new Error('Failed to place order');
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.detail || 'Failed to place order');
+      }
   
+      const orderDetails = await response.json(); // Full order details from the backend
       alert('Order placed successfully!');
+  
       clearCart();
-      router.push('/dashboard');
+  
+      // Redirect to order-success with all details
+      router.push({
+        pathname: '/order-success',
+        query: { ...orderDetails }, // Pass full order details in query params
+      });
   
     } catch (error) {
       console.error('Error:', error);
-      alert('Failed to place order. Please try again.');
+      alert(error.message || 'Failed to place order. Please try again.');
     } finally {
       setIsLoading(false);
     }
   };
+  
+  
 
   // Check if cart is empty
   if (items.length === 0) {
     return (
       <div className="min-h-screen bg-gray-50">
         <Header />
-        <main className="max-w-5xl mx-auto px-4 py-8">
-          <div className="text-center">
+        <main className="max-w-5xl text-black mx-auto px-4 py-8">
+          <div className="text-center text-gray-500">
             <h2 className="text-2xl font-semibold mb-4">Your cart is empty</h2>
             <button
-              onClick={() => router.push('/')}
+              onClick={() => router.push('/dashboard')}
               className="text-green-600 font-medium"
             >
               Continue Shopping

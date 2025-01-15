@@ -105,7 +105,6 @@ export const Promotions: React.FC = () => {
               </div>
             ))}
           </div>
-          <div className="w-full h-px bg-green-600 mt-4"></div>
         </>
       )}
     </div>

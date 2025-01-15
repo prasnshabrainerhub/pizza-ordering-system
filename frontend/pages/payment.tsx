@@ -2,99 +2,90 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/router';
 import { X } from 'lucide-react';
 import { useCart } from '../components/CartContext';
-import { loadStripe } from '@stripe/stripe-js';
-
-
-
-const stripePromise = loadStripe('pk_test_51QgmzvG0J9L6vuulF43QyGxdh0EqxvPgHN8fDJKMxlxWldsnuNNM0WfkYV6OdwfOLTuXGJRvTUeJ6K6JI9beL8rp0089HJu35e');
-
 
 const Payment = () => {
   const router = useRouter();
   const { items, clearCart } = useCart();
   const [showQR, setShowQR] = useState(false);
+  const [loading, setLoading] = useState(false);
   const amount = router.query.amount || '662.00';
 
   const handleClose = () => {
     router.push('/checkout');
   };
 
-const handlePaymentSuccess = async () => {
-  try {
-    const stripe = await stripePromise;
-    
-    // Create payment intent with proper request body
-    const intentResponse = await fetch(`http://localhost:8000/api/create-payment-intent`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ 
-        amount: parseFloat(amount as string) // Ensure amount is parsed as float
-      })
-    });
-    
-    if (!intentResponse.ok) {
-      const errorData = await intentResponse.json();
-      throw new Error(errorData.detail || 'Failed to create payment intent');
-    }
-
-    const { clientSecret } = await intentResponse.json();
-
-    // Confirm payment
-    const { error } = await stripe.confirmPayment({
-      clientSecret,
-      payment_method: {
-        type: 'card',
-        // Add payment method details based on selection
-      },
-    });
-
-    if (error) {
-      throw new Error(error.message);
-    }
-
-    // Place order after successful payment
-    await placeOrder('COMPLETED');
-    
-    alert('Payment successful!');
-    clearCart();
-    router.push('/dashboard');
-
-  } catch (error) {
-    console.error('Error:', error);
-    alert('Payment failed. Please try again.');
-  }
-};
-
-    const placeOrder = async (paymentStatus: string) => {
-      const accessToken = localStorage.getItem('access_token');
-      if (!accessToken) throw new Error('Please login to place order');
-
-      const orderData = {
-        order_items: items.map(item => ({
-          pizza_id: item.pizzaId,
-          quantity: item.quantity,
-          size: item.size?.toUpperCase() || 'MEDIUM',
-          custom_toppings: item.toppings || []
-        })),
-        payment_method: 'ONLINE',
-        payment_status: paymentStatus,
-        total_amount: parseFloat(amount),
-        delivery_address: "Test Address",
-        contact_number: "1234567890",
-        notes: ""
-      };
-
-      const response = await fetch('http://localhost:8000/api/orders', {
+  const createPaymentLink = async (paymentType) => {
+    setLoading(true);
+    try {
+      const response = await fetch('http://localhost:8000/api/create-payment-link', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${accessToken}`,
+          'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
         },
-        body: JSON.stringify(orderData),
+        body: JSON.stringify({
+          amount: parseFloat(amount),
+          payment_type: paymentType,
+          order_items: items.map(item => ({
+            pizza_id: item.pizzaId,
+            quantity: item.quantity,
+            size: item.size?.toUpperCase() || 'MEDIUM',
+            custom_toppings: item.toppings || []
+          })),
+          delivery_address: "Test Address",
+          contact_number: "1234567890",
+          notes: ""
+        }),
       });
 
-      if (!response.ok) throw new Error('Failed to place order');
-    };
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.detail || 'Failed to create payment link');
+      }
+
+      const { url } = await response.json();
+      if (url) {
+        // If it's a redirect URL from your payment provider
+        window.location.href = url;
+      } else if (response.ok) {
+        // If payment is processed directly
+        router.push(`/order-success?order_id=${orderId}`);
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      alert(error.message || 'Failed to create payment link');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const paymentOptions = [
+    { 
+      name: 'Card Payment', 
+      icon: '💳',
+      type: 'card'
+    },
+    { 
+      name: 'Pay by UPI', 
+      icon: '🔰',
+      type: 'upi'
+    },
+    { 
+      name: 'Mobile Wallets', 
+      icon: '👛',
+      type: 'wallet'
+    },
+    { 
+      name: 'Net Banking', 
+      icon: '🏦',
+      type: 'netbanking'
+    },
+    { 
+      name: 'Bank Transfer', 
+      icon: '💸',
+      type: 'bank_transfer'
+    }
+  ];
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black/20">
@@ -120,7 +111,6 @@ const handlePaymentSuccess = async () => {
                 <span>→</span>
               </div>
             </button>
-
             <button 
               className="w-full bg-white/10 text-white px-4 py-3 rounded-lg hover:bg-white/20 transition-colors border border-white/20"
             >
@@ -141,7 +131,7 @@ const handlePaymentSuccess = async () => {
           <div className="absolute bottom-8 left-8 bg-white/5 rounded-lg p-4">
             <img 
               src="/api/placeholder/120/30"
-              alt="Secured by Cashfree Payments" 
+              alt="Secured by Stripe Payments" 
               className="opacity-60"
             />
           </div>
@@ -157,48 +147,35 @@ const handlePaymentSuccess = async () => {
           </div>
 
           <div className="mb-8">
-            <h2 className="text-sm font-medium text-gray-700 mb-4">Quick UPI</h2>
+            <h2 className="text-sm font-medium text-gray-700 mb-4">Quick Pay</h2>
             <div className="bg-white p-6 rounded-lg text-center shadow-sm border border-gray-100">
-              {showQR ? (
-                <img 
-                  src="/api/placeholder/200/200"
-                  alt="QR Code"
-                  className="mx-auto mb-4 border-2 border-dashed border-gray-200 p-2 rounded-lg"
-                />
-              ) : (
-                <button 
-                  onClick={() => setShowQR(true)}
-                  className="text-[#7E3AF2] font-medium bg-purple-50 px-4 py-2 rounded-lg hover:bg-purple-100 transition-colors"
-                >
-                  Tap to generate QR
-                </button>
-              )}
+              <button 
+                onClick={() => createPaymentLink('upi')}
+                disabled={loading}
+                className="text-[#7E3AF2] font-medium bg-purple-50 px-6 py-3 rounded-lg hover:bg-purple-100 transition-colors w-full"
+              >
+                {loading ? 'Processing...' : 'Pay Now'}
+              </button>
               <p className="text-sm text-gray-600 mt-4">
-                Scan and pay with
+                Supports all payment methods
                 <div className="flex justify-center gap-4 mt-4">
                   <img src="/gpay.png" alt="GPay" className="h-8 p-1 bg-gray-50 rounded-lg" />
                   <img src="/paytm.png" alt="PhonePe" className="h-8 p-1 bg-gray-50 rounded-lg" />
                   <img src="/phonepe.png" alt="Paytm" className="h-8 p-1 bg-gray-50 rounded-lg" />
                 </div>
-                or other UPI apps
               </p>
             </div>
           </div>
 
           <div>
-            <h2 className="text-sm font-medium text-gray-700 mb-4">Payment Options</h2>
+            <h2 className="text-sm font-medium text-gray-700 mb-4">All Payment Options</h2>
             <div className="space-y-3 text-gray-600">
-              {[
-                { name: 'Pay by UPI ID', icon: '🔰' },
-                { name: 'Card', icon: '💳' },
-                { name: 'Wallets', icon: '👛' },
-                { name: 'Net Banking', icon: '🏦' },
-                { name: 'RTGS / NEFT / IMPS', icon: '💸' }
-              ].map((option) => (
+              {paymentOptions.map((option) => (
                 <button
                   key={option.name}
-                  onClick={handlePaymentSuccess}
-                  className="w-full flex items-center justify-between p-4 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors shadow-sm"
+                  onClick={() => createPaymentLink(option.type)}
+                  disabled={loading}
+                  className="w-full flex items-center justify-between p-4 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors shadow-sm disabled:opacity-50"
                 >
                   <div className="flex items-center gap-3">
                     <span className="bg-gray-50 p-2 rounded-lg">{option.icon}</span>
@@ -213,7 +190,6 @@ const handlePaymentSuccess = async () => {
       </div>
     </div>
   );
-
 };
 
 export default Payment;
