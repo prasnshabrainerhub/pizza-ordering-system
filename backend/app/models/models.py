@@ -46,7 +46,7 @@ class PizzaSizeEnum(str, enum.Enum):
     LARGE = "large"
 
 class PizzaSize(Base):
-    __tablename__ = "pizza_sizes"
+    __tablename__ = "s"
 
     size_id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     pizza_id = Column(UUID(as_uuid=True), ForeignKey('pizzas.pizza_id'))
@@ -88,15 +88,12 @@ class Order(Base):
     contact_number = Column(String, nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-    notes = Column(String)
-    pizza_size = Column(SQLAlchemyEnum(PizzaSizeEnum), nullable=False)
-    coupon_id = Column(UUID(as_uuid=True), ForeignKey('coupons.coupon_id'), nullable=True)
-    discount_amount = Column(Float, default=0.0)
+    
 
     items = relationship("OrderItem", back_populates="order")
     user = relationship("User", back_populates="orders")
-    coupon = relationship("Coupon")
-    coupon_usages = relationship("CouponUsage", uselist=False, back_populates="order")
+    # coupon = relationship("Coupon")
+    # coupon_usages = relationship("CouponUsage", uselist=False, back_populates="order")
 
 class OrderItem(Base):
     __tablename__ = "order_items"
@@ -106,7 +103,7 @@ class OrderItem(Base):
     pizza_id = Column(UUID(as_uuid=True), ForeignKey('pizzas.pizza_id'), nullable=False)
     quantity = Column(Integer, nullable=False)
     custom_toppings = Column(JSON, default=list)
-    item_price = Column(Float, nullable=False)
+    size = Column(SQLAlchemyEnum(PizzaSizeEnum), nullable=False)
     
     order = relationship("Order", back_populates="items")
     pizza = relationship("Pizza", back_populates="orders")
@@ -141,4 +138,4 @@ class CouponUsage(Base):
     order_id = Column(UUID(as_uuid=True), ForeignKey('orders.order_id'), nullable=False)
     used_at = Column(DateTime, default=datetime.utcnow)
     discount_amount = Column(Float, nullable=False)
-    order = relationship("Order", back_populates="coupon_usages")
+    # order = relationship("Order", back_populates="coupon_usages")

@@ -54,7 +54,7 @@ export const PizzaCustomizeModal: React.FC<PizzaCustomizeModalProps> = ({ isOpen
   const [isLoading, setIsLoading] = useState(true);
 
   // Fix the image URL by ensuring it starts with a forward slash
-  const imageUrl = pizza.image_url 
+  const imageUrl = pizza.image_url && typeof pizza.image_url === 'string' 
     ? `${API_BASE_URL}/${pizza.image_url.startsWith('/') ? pizza.image_url.slice(1) : pizza.image_url}`
     : '/placeholder-pizza.jpg';
 

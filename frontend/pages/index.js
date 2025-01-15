@@ -24,16 +24,16 @@ const Home = () => {
           <h1 className="text-2xl font-bold">Pizza Bliss</h1>
           <ul className="flex space-x-6 text-lg">
             <li>
-              <Link href="/">Home</Link>
+              <Link href="/dashboard">Home</Link>
             </li>
             <li>
-              <Link href="/menu">Menu</Link>
+              <Link href="/dashboard">Menu</Link>
             </li>
             <li>
-              <Link href="/about">About</Link>
+              <Link href="/dashboard">About</Link>
             </li>
             <li>
-              <Link href="/contact">Contact</Link>
+              <Link href="/dashboard">Contact</Link>
             </li>
           </ul>
         </nav>
@@ -179,7 +179,9 @@ const Home = () => {
             Sourced Fresh, Made to Wow. Enjoy our signature pizzas at a great price!
           </p>
           <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex justify-between w-full px-4">
-            <button className="bg-red-600 text-white px-4 py-2 rounded-full">Dig In</button>
+          <Link href="/dashboard">
+            <button className="bg-red-600 text-white px-4 py-2 rounded-full">Buy Now</button>
+            </Link>
           </div>
         </div>
 
@@ -199,7 +201,9 @@ const Home = () => {
             Green Capsicum, Crunchy Onion, Spiced Paneer, Golden Corn, Black Olive in Cheese Sauce.
           </p>
           <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex justify-between w-full px-4">
+          <Link href="/dashboard">
             <button className="bg-red-600 text-white px-4 py-2 rounded-full">Buy Now</button>
+            </Link>
           </div>
         </div>
 
@@ -219,7 +223,9 @@ const Home = () => {
             Dig in with our amazing pizza deals.
           </p>
           <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex justify-between w-full px-4">
+          <Link href="/dashboard">
             <button className="bg-red-600 text-white px-4 py-2 rounded-full">Buy Now</button>
+            </Link>
           </div>
         </div>
 
@@ -239,7 +245,9 @@ const Home = () => {
             Green Capsicum, Crunchy Onion, Golden Corn, Black Olives with Authentic Pesto Sauce.
           </p>
           <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex justify-between w-full px-4">
+          <Link href="/dashboard">
             <button className="bg-red-600 text-white px-4 py-2 rounded-full">Buy Now</button>
+            </Link>
           </div>
         </div>
 
@@ -259,7 +267,9 @@ const Home = () => {
             Freshly baked bread with garlic butter, a perfect companion to your pizza.
           </p>
           <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex justify-between w-full px-4">
+          <Link href="/dashboard">
             <button className="bg-red-600 text-white px-4 py-2 rounded-full">Buy Now</button>
+            </Link>
           </div>
         </div>
 
@@ -267,7 +277,7 @@ const Home = () => {
         <div className="relative border-2 border-gray-300 rounded-lg p-6 hover:bg-red-600 hover:text-white transition-all duration-300">
           <div className="flex justify-center mb-4">
             <img
-              src="/pizza6.png" // Small pizza image for the box
+              src="/pizza3.png" // Small pizza image for the box
               alt="Pizza"
               width={150}
               height={150}
@@ -279,7 +289,9 @@ const Home = () => {
             Crispy chicken wings with a tangy lemon herb sauce.
           </p>
           <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex justify-between w-full px-4">
+          <Link href="/dashboard">
             <button className="bg-red-600 text-white px-4 py-2 rounded-full">Buy Now</button>
+            </Link>
           </div>
         </div>
       </div>

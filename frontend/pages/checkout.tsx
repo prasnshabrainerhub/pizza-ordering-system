@@ -35,27 +35,28 @@ const Checkout = () => {
         alert('Please login to place an order');
         return;
       }
-
-      // Convert toppings to topping IDs if needed
-      const orderItems = items.map(item => ({
-        pizza_id: item.pizzaId,
-        quantity: item.quantity,
-        pizza_size: item.size?.toUpperCase() || 'MEDIUM',
-        custom_toppings: item.toppings || [] // Assuming these are already topping IDs
-      }));
-
-      // Create order payload matching backend structure
+  
+      if (paymentMethod === 'ONLINE') {
+        router.push(`/payment?amount=${calculateTotal()}`);
+        return;
+      }
+  
+      // For Cash on Delivery
       const orderData = {
-        items: orderItems,
+        order_items: items.map(item => ({
+          pizza_id: item.pizzaId,
+          quantity: item.quantity,
+          size: item.size?.toUpperCase() || 'MEDIUM',
+          custom_toppings: item.toppings || []
+        })),
+        payment_method: 'CASH',
+        payment_status: 'PENDING',
         total_amount: calculateTotal(),
-        payment_method: paymentMethod,
-        contact_number: "1234567890", // TODO: Get from user input
-        delivery_address: "Test Address", // TODO: Get from user input
+        delivery_address: "Test Address",
+        contact_number: "1234567890",
         notes: ""
       };
-
-      console.log('Sending order data:', orderData); // Debug log
-
+  
       const response = await fetch('http://localhost:8000/api/orders', {
         method: 'POST',
         headers: {
@@ -64,27 +65,16 @@ const Checkout = () => {
         },
         body: JSON.stringify(orderData),
       });
-
-      const responseData = await response.json();
-
-      if (!response.ok) {
-        // Handle specific error messages from backend
-        throw new Error(responseData.detail || 'Failed to place order');
-      }
-      
-      alert('Your order has been placed successfully!');
+  
+      if (!response.ok) throw new Error('Failed to place order');
+  
+      alert('Order placed successfully!');
       clearCart();
       router.push('/dashboard');
-
+  
     } catch (error) {
-      console.error('Error placing order:', error);
-      
-      // Better error handling
-      if (error instanceof Error) {
-        alert(error.message);
-      } else {
-        alert('An unexpected error occurred. Please try again.');
-      }
+      console.error('Error:', error);
+      alert('Failed to place order. Please try again.');
     } finally {
       setIsLoading(false);
     }

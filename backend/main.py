@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from app.core.database import engine, Base
-from app.apis import auth, pizza, orders, coupon, toppings
+from app.apis import auth, pizza, orders, coupon, toppings, payment
 
 app = FastAPI(title="Pizza Ordering System")
 
@@ -33,6 +33,7 @@ app.include_router(pizza.router, prefix="/api", tags=["pizzas"])
 app.include_router(orders.router, prefix="/api", tags=["orders"])
 app.include_router(coupon.router, prefix="/api", tags=["coupons"])
 app.include_router(toppings.router, prefix="/api", tags=["toppings"])
+app.include_router(payment.router, prefix="/api", tags=["payment"])
 
 if __name__ == "__main__":
     import uvicorn

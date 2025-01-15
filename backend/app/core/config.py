@@ -14,6 +14,8 @@ class Settings(BaseSettings):
     TWILIO_AUTH_TOKEN: str
     TWILIO_PHONE_NUMBER: str
     FRONTEND_URL: str
+    STRIPE_SECRET_KEY: str
+    STRIPE_WEBHOOK_SECRET: str
 
 
     class Config:
