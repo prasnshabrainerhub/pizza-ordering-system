@@ -20,213 +20,6 @@ const Dashboard: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
   const [adminView, setAdminView] = useState<string>('');
-  
-  const staticPizzas: Pizza[] = [
-    // Category 1: Pizza Category 1
-    {
-      id: '1',
-      name: 'Classic Margherita',
-      description: 'Fresh tomatoes, mozzarella, and basil.',
-      base_price: 8,
-      category: PIZZA_CATEGORIES[0].id,
-      sizes: [
-        { size: 'small', price: 8 },
-        { size: 'medium', price: 10 },
-        { size: 'large', price: 12 },
-      ],
-      image_url: '/Home.png',
-    },
-    {
-      id: '2',
-      name: 'Pepperoni Feast',
-      description: 'Loaded with pepperoni and cheese.',
-      base_price: 10,
-      category: PIZZA_CATEGORIES[0].id,
-      sizes: [
-        { size: 'small', price: 10 },
-        { size: 'medium', price: 12 },
-        { size: 'large', price: 14 },
-      ],
-      image_url: '/Home1.png',
-    },
-    {
-      id: '3',
-      name: 'Veggie Supreme',
-      description: 'Topped with fresh vegetables.',
-      base_price: 9,
-      category: PIZZA_CATEGORIES[0].id,
-      sizes: [
-        { size: 'small', price: 9 },
-        { size: 'medium', price: 11 },
-        { size: 'large', price: 13 },
-      ],
-      image_url: '/pizza3.png',
-    },
-
-    // Category 2: Pizza Category 2
-    {
-      id: '4',
-      name: 'Hawaiian Paradise',
-      description: 'Topped with ham, pineapple, and cheese.',
-      base_price: 12,
-      category: PIZZA_CATEGORIES[1].id,
-      sizes: [
-        { size: 'small', price: 12 },
-        { size: 'medium', price: 14 },
-        { size: 'large', price: 16 },
-      ],
-      image_url: '/Home.png',
-    },
-    {
-      id: '5',
-      name: 'Meat Lovers',
-      description: 'Loaded with pepperoni, sausage, and bacon.',
-      base_price: 14,
-      category: PIZZA_CATEGORIES[1].id,
-      sizes: [
-        { size: 'small', price: 14 },
-        { size: 'medium', price: 16 },
-        { size: 'large', price: 18 },
-      ],
-      image_url: '/Home1.png',
-    },
-    {
-      id: '6',
-      name: 'Veggie Delight',
-      description: 'Topped with fresh vegetables and cheese.',
-      base_price: 10,
-      category: PIZZA_CATEGORIES[1].id,
-      sizes: [
-        { size: 'small', price: 10 },
-        { size: 'medium', price: 12 },
-        { size: 'large', price: 14 },
-      ],
-      image_url: '/pizza3.png',  
-    },
-
-    // Category 3: Pizza Category 3 
-    {
-      id: '7',
-      name: 'Pepperoni Paradise',
-      description: 'Loaded with pepperoni and cheese.',
-      base_price: 14,
-      category: PIZZA_CATEGORIES[2].id,
-      sizes: [
-        { size: 'small', price: 14 },
-        { size: 'medium', price: 16 },
-        { size: 'large', price: 18 },
-      ],
-      image_url: '/Home.png',
-    },
-    {
-      id: '8',
-      name: 'Hawaiian Paradise',
-      description: 'Topped with ham, pineapple, and cheese.',
-      base_price: 12,
-      category: PIZZA_CATEGORIES[2].id,
-      sizes: [
-        { size: 'small', price: 12 },
-        { size: 'medium', price: 14 },
-        { size: 'large', price: 16 }, 
-      ],
-      image_url: '/Home1.png',
-    },
-    {
-      id: '9',
-      name: 'Veggie Delight',
-      description: 'Topped with fresh vegetables and cheese.',
-      base_price: 10,
-      category: PIZZA_CATEGORIES[2].id,
-      sizes: [
-        { size: 'small', price: 10 },
-        { size: 'medium', price: 12 },
-        { size: 'large', price: 14 },
-      ],
-      image_url: 'pizza3.png',
-    },
-
-    // Category 4: Pizza Category 4
-    {
-      id: '10',
-      name: 'Hawaiian Paradise',
-      description: 'Topped with ham, pineapple, and cheese.',
-      base_price: 12,
-      category: PIZZA_CATEGORIES[3].id,
-      sizes: [
-        { size: 'small', price: 12 },
-        { size: 'medium', price: 14 },
-        { size: 'large', price: 16 },
-      ],
-      image_url: '/Home.png',
-    },
-    {
-      id: '11',
-      name: 'Meat Lovers',
-      description: 'Loaded with pepperoni, sausage, and bacon.',
-      base_price: 14,
-      category: PIZZA_CATEGORIES[3].id,
-      sizes: [
-        { size: 'small', price: 14 },
-        { size: 'medium', price: 16 },
-        { size: 'large', price: 18 },
-      ],
-      image_url: '/Home1.png',
-    },
-    {
-      id: '12',
-      name: 'Veggie Delight',
-      description: 'Topped with fresh vegetables and cheese.',
-      base_price: 10,
-      category: PIZZA_CATEGORIES[3].id,
-      sizes: [
-        { size: 'small', price: 10 },
-        { size: 'medium', price: 12 },
-        { size: 'large', price: 14 },
-      ],
-      image_url: '/pizza3.png',  
-    },
-
-    // Category 5: Pizza Category 5
-    {
-      id: '13',
-      name: 'Pepperoni Paradise',
-      description: 'Loaded with pepperoni and cheese.',
-      base_price: 14,
-      category: PIZZA_CATEGORIES[4].id,
-      sizes: [
-        { size: 'small', price: 14 },
-        { size: 'medium', price: 16 },
-        { size: 'large', price: 18 },
-      ],
-      image_url: '/Home.png',
-    },    
-    {
-      id: '14',
-      name: 'Hawaiian Paradise',
-      description: 'Topped with ham, pineapple, and cheese.',
-      base_price: 12,
-      category: PIZZA_CATEGORIES[4].id,
-      sizes: [
-        { size: 'small', price: 12 },
-        { size: 'medium', price: 14 },
-        { size: 'large', price: 16 }, 
-      ],
-      image_url: '/Home1.png',
-    },
-    {
-      id: '15',
-      name: 'Veggie Delight',
-      description: 'Topped with fresh vegetables and cheese.',
-      base_price: 10,
-      category: PIZZA_CATEGORIES[4].id,
-      sizes: [
-        { size: 'small', price: 10 },
-        { size: 'medium', price: 12 },
-        { size: 'large', price: 14 },
-      ],
-      image_url: '/pizza3.png',
-    },
-  ];
 
   useEffect(() => {
     // Check if user is admin
@@ -270,7 +63,7 @@ const Dashboard: React.FC = () => {
                 onClick={() => setAdminView('')}
                 className="mb-4 px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300"
             >
-                ← Back
+                {t('← Back')}
             </button>
             <PizzaManagement />
         </div>
@@ -282,7 +75,7 @@ const Dashboard: React.FC = () => {
               onClick={() => setAdminView('')}
               className="mb-4 px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300"
             >
-              ← Back
+              {t('← Back')}
             </button>
             <OrderHistory />
           </div>
@@ -294,7 +87,7 @@ const Dashboard: React.FC = () => {
                 onClick={() => setAdminView('')}
                 className="mb-4 px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300"
               >
-                ← Back
+                {t('← Back')}
               </button>
               <CouponManagement />
             </div>
@@ -306,7 +99,7 @@ const Dashboard: React.FC = () => {
                 onClick={() => setAdminView('')}
                 className="mb-4 px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300"
               >
-                ← Back
+                {t('← Back')}
               </button>
               <ToppingManagement />
             </div>
@@ -378,6 +171,12 @@ const Dashboard: React.FC = () => {
 
 
 export const getServerSideProps = async ({ locale }) => {
+<<<<<<< HEAD
+=======
+  if (!locale) {
+    locale = ['en', 'es', 'hi'];
+  }
+>>>>>>> 116d88e589facdcd06335a49c61bad8af2000061
   return {
     props: {
       ...(await serverSideTranslations(locale ?? 'en', ['common'])),

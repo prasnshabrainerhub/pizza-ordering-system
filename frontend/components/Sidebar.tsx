@@ -48,7 +48,7 @@ export const Sidebar = () => {
   };
 
   if (loading) {
-    return <div className="p-4">Loading...</div>;
+    return <div className="p-4">{t('Loading...')}</div>;
   }
 
   return (
@@ -56,7 +56,7 @@ export const Sidebar = () => {
       <div className="p-3">
         <div className="bg-green-600 rounded-lg shadow-md p-3">
           <h2 className="text-xl font-bold text-white text-center font-sans">
-            Categories
+            {t('Categories')}
           </h2>
         </div>
       </div>
@@ -71,7 +71,7 @@ export const Sidebar = () => {
                 className="w-full text-left p-3 bg-gray-100 hover:bg-green-500 hover:text-white shadow rounded-md flex items-center gap-3 transform hover:-translate-y-1 transition-all duration-200"
               >
                 <span className="text-lg">{category.icon}</span>
-                <span className="text-sm font-medium flex-1">{category.name}</span>
+                <span className="text-sm font-medium flex-1">{t(category.name)}</span>
                 {categoryPizzas.length > 0 && (
                   <span className="text-xs bg-gray-200 text-gray-700 px-2 py-1 rounded-full">
                     {categoryPizzas.length}

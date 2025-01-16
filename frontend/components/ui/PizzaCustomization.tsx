@@ -3,7 +3,7 @@ import Image from 'next/image';
 import { X } from 'lucide-react';
 import { useCart } from '.././CartContext';
 import { CartItem } from '../../types/types';
-
+import { useTranslation } from 'next-i18next';
 enum PizzaSizeEnum {
   SMALL = 'small',
   MEDIUM = 'medium',
@@ -47,6 +47,7 @@ interface PizzaCustomizeModalProps {
 const API_BASE_URL = 'http://localhost:8000';
 
 export const PizzaCustomizeModal: React.FC<PizzaCustomizeModalProps> = ({ isOpen, onClose, pizza }) => {
+  const { t } = useTranslation('common');
   const [selectedSize, setSelectedSize] = useState<PizzaSizeEnum | ''>('');
   const [toppings, setToppings] = useState<Topping[]>([]);
   const [selectedToppings, setSelectedToppings] = useState<Topping[]>([]);
@@ -132,7 +133,7 @@ export const PizzaCustomizeModal: React.FC<PizzaCustomizeModalProps> = ({ isOpen
       <div className="bg-white rounded-lg w-full max-w-md">
         {/* Header */}
         <div className="p-2 flex justify-between items-center border-b">
-          <h2 className="text-lg font-semibold">Customize Your Pizza</h2>
+          <h2 className="text-lg font-semibold">{t('Customize Your Pizza')}</h2>
           <button onClick={onClose} className="p-1 hover:bg-gray-100 rounded-full">
             <X className="w-5 h-5" />
           </button>
@@ -152,13 +153,13 @@ export const PizzaCustomizeModal: React.FC<PizzaCustomizeModalProps> = ({ isOpen
             <div className="w-1/2">
               <h3 className="font-medium">{pizza.name}</h3>
               <p className="text-gray-600 text-xs mt-1">{pizza.description}</p>
-              <p className="text-gray-600 text-xs mt-1">Base Price: ₹{pizza.base_price}</p>
+              <p className="text-gray-600 text-xs mt-1">{t('Base Price: ₹')}{pizza.base_price}</p>
             </div>
           </div>
 
           {/* Size Selection */}
           <div className="mb-4">
-            <h3 className="text-sm font-semibold mb-2">Select Size</h3>
+            <h3 className="text-sm font-semibold mb-2">{t('Select Size')}</h3>
             <div className="grid grid-cols-3 gap-2">
               {DEFAULT_SIZES.map((sizeOption) => {
                 const price = (pizza.base_price || 0) + (sizeOption.price || 0);
@@ -186,8 +187,8 @@ export const PizzaCustomizeModal: React.FC<PizzaCustomizeModalProps> = ({ isOpen
 
           {/* Choice of Pizza */}
           <div className="mb-4">
-            <h3 className="text-sm font-medium mb-2">Choice Of Pizza</h3>
-            <p className="text-xs text-gray-500 mb-2">You can choose up to 1 option(s)</p>
+            <h3 className="text-sm font-medium mb-2">{t('Choice Of Pizza')}</h3>
+            <p className="text-xs text-gray-500 mb-2">{t('You can choose up to 1 option(s)')}</p>
             <div className="space-y-2">
               {['Regular Pan', 'Thin Crust'].map((variant) => (
                 <label key={variant} className="flex items-center justify-between p-2 border rounded-lg">
@@ -210,8 +211,8 @@ export const PizzaCustomizeModal: React.FC<PizzaCustomizeModalProps> = ({ isOpen
           {/* Toppings */}
           {!isLoading && (
             <div className="mb-4">
-              <h3 className="text-sm font-medium mb-2">Extra Toppings</h3>
-              <p className="text-xs text-gray-500 mb-2">You can choose multiple toppings</p>
+              <h3 className="text-sm font-medium mb-2">{t('Extra Toppings')}</h3>
+              <p className="text-xs text-gray-500 mb-2">{t('You can choose multiple toppings')}</p>
               <div className="space-y-2 max-h-32 overflow-y-auto">
                 {toppings.map((topping) => (
                   <label key={topping.topping_id} className="flex items-center justify-between p-2 border rounded-lg">

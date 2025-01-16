@@ -2,6 +2,7 @@ import React from 'react';
 import Image from 'next/image';
 import { Pizza } from '../../types/types';
 import {PizzaCustomizeModal} from './PizzaCustomization';
+import { useTranslation } from 'react-i18next';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
@@ -10,6 +11,8 @@ interface PizzaCardProps {
 }
 
 export const PizzaCard = ({ pizza }: PizzaCardProps) => {
+
+  const { t } = useTranslation('common');
   const basePrice = pizza.base_price || 0;
   const sizes = pizza.sizes || [];
   const smallestSize = sizes.length > 0 ? sizes.reduce((prev, curr) => 
@@ -45,7 +48,7 @@ export const PizzaCard = ({ pizza }: PizzaCardProps) => {
         <p className="text-sm text-gray-600 mt-2">{pizza.description}</p>
         {pizza.sizes && pizza.sizes.length > 0 && (
           <div className="mt-2">
-            <p className="text-sm text-gray-600">Available sizes:</p>
+            <p className="text-sm text-gray-600">{t('Available sizes:')}</p>
             <div className="flex gap-2 mt-1">
               {pizza.sizes.map((size) => (
                 <span key={size.size} className="text-sm bg-gray-100 px-2 py-1 rounded">
@@ -59,7 +62,7 @@ export const PizzaCard = ({ pizza }: PizzaCardProps) => {
           className="mt-4 w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700"
           onClick={() => setIsModalOpen(true)}
         >
-          Customize
+          {t('Customize')}
         </button>
       </div>
       

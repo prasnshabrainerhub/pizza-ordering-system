@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { X } from 'lucide-react';
 import { SignUpModal } from './SignUpModel';
 import { authApi, storeTokens } from '../utils/auth';
+import { useTranslation } from 'react-i18next';
 
 interface LoginModalProps {
   isOpen: boolean;
@@ -19,7 +20,9 @@ interface LoginResponse {
   };
 }
 
-export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLoginSuccess }) => {
+export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLoginSuccess }
+) => {
+  const { t } = useTranslation();
   const [isSignUpModalOpen, setIsSignUpModalOpen] = useState(false);
   const [formData, setFormData] = useState({
     email: '',
@@ -73,7 +76,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLogin
             <X size={20} />
           </button>
 
-          <h2 className="text-2xl font-semibold mb-6">Login to Continue</h2>
+          <h2 className="text-2xl font-semibold mb-6">{t('Login to Continue')}</h2>
 
           {error && (
             <div className="mb-4 p-2 bg-red-100 text-red-600 rounded-lg text-sm">
@@ -114,12 +117,12 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLogin
           </form>
 
           <div className="mt-4 text-center text-sm">
-            <span>Don&apos;t have an account? </span>
+            <span>{t('Don&apos;t have an account? ')}</span>
             <button
               onClick={() => setIsSignUpModalOpen(true)}
               className="text-blue-500 hover:underline"
             >
-              Sign Up
+             {t(' Sign Up')}
             </button>
           </div>
         </div>

@@ -13,9 +13,9 @@ export const StoreHeader = () => {
           <div className="flex items-start gap-2">
             <Store className="text-gray-500 mt-1" size={16} />
             <div>
-              <h2 className="font-bold text-gray-800">Ahmedabad</h2>
+              <h2 className="font-bold text-gray-800">{t('Ahmedabad')}</h2>
               <p className="text-xs text-gray-500">
-                Shop 24 Maple Trade Center nr, Surdhara Cir, Thaltej, Ahmedabad, Gujarat 380054
+                {t('Shop 24 Maple Trade Center nr, Surdhara Cir, Thaltej, Ahmedabad, Gujarat 380054')}
               </p>
             </div>
           </div>
@@ -25,7 +25,7 @@ export const StoreHeader = () => {
           </div>
           <div className="mt-1">
             <span className="bg-green-50 text-green-600 px-3 py-1 rounded-full text-xs border border-green-200">
-              Open till 1 AM
+              {t('Open till 1 AM')}
             </span>
           </div>
         </div>

@@ -76,12 +76,12 @@ export const Promotions: React.FC = () => {
     <div className="w-full bg-gray-50">
       <div className="px-4 py-2">
         <h2 className="text-green-600 font-semibold text-lg inline-block px-6 py-1 bg-white rounded-full shadow-sm">
-          PROMOS
+          {t('PROMOS')}
         </h2>
       </div>
       
       {coupons.length === 0 ? (
-        <p className="px-4 text-gray-500">No active promotions available</p>
+        <p className="px-4 text-gray-500">{t('No active promotions available')}</p>
       ) : (
         <>
           <div className="flex gap-6 overflow-x-auto px-4 py-4">
@@ -92,7 +92,7 @@ export const Promotions: React.FC = () => {
                 onClick={() => handleCopyCode(coupon.code)}
               >
                 <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  <span className="text-xs text-green-600 font-medium">Click to copy</span>
+                  <span className="text-xs text-green-600 font-medium">{t('Click to copy')}</span>
                 </div>
                 <div className="mt-2">
                   <p className="text-lg font-medium">
@@ -101,7 +101,7 @@ export const Promotions: React.FC = () => {
                       : `flat ${coupon.discount_value} off`)}
                   </p>
                   <p className="text-sm text-gray-500 mt-2">
-                    Use code: <span className="font-medium text-green-600">{coupon.code}</span>
+                   {t(' Use code:')} <span className="font-medium text-green-600">{coupon.code}</span>
                   </p>
                 </div>
               </div>
