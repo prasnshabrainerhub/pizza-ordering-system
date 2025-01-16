@@ -34,14 +34,14 @@ const Home = () => {
       <div className="relative z-10 flex items-center justify-center min-h-screen">
         <div className="text-center text-white px-4">
           <h1 className="text-4xl font-bold mb-6">
-            Welcome to Pizza Bliss
+            {t('Welcome to Pizza Bliss')}
           </h1>
           <p className="text-xl mb-8">
-            Satisfy your cravings with the finest pizza in town! Fresh ingredients, fast delivery, and unbeatable taste.
+            {t('Satisfy your cravings with the finest pizza in town! Fresh ingredients, fast delivery, and unbeatable taste.')}
           </p>
           <Link href="/dashboard">
             <button className="bg-red-500 text-white px-8 py-4 text-lg font-bold rounded hover:bg-red-600 transition-colors uppercase">
-              Lets Eat
+             {t(' Lets Eat')}
             </button>
           </Link>
         </div>
@@ -68,23 +68,23 @@ const Home = () => {
                 {/* Red Line and Text: since 2021 */}
                 <div className="flex items-center mb-4">
                   <div className="w-16 h-1 bg-red-500 mr-2"></div>
-                  <p className="text-red-500 text-sm font-medium">since 2021</p>
+                  <p className="text-red-500 text-sm font-medium">{t('since 2021')}</p>
                 </div>
 
                 {/* Main Title: Pizza So Good, Even Your Diet Will Cheat! */}
                 <h3 className="text-5xl font-extrabold text-gray-800 tracking-tight font-serif">
-                  Pizza So Good, Even
+                  {t('Pizza So Good, Even')}
                 </h3>
                 <h2 className="text-4xl font-extrabold text-gray-800 tracking-tight font-serif">
-                  Your Diet Will Cheat!
+                  {t('Your Diet Will Cheat!')}
                 </h2>
 
                 {/* Description Text: Box-like Format */}
                 <p className="text-lg text-gray-600 leading-relaxed pt-6 mt-6">
-                  Each slice is an adventure, featuring a golden crust that is both crispy and soft, layered with vibrant,
-                  fresh toppings and rich sauces. Whether you crave classic flavors or bold new combinations, each bite is
-                  a flavorful rebellion against boring meals. Experience the best pizza at La Milano Pizzeria. Where every
-                  pizza is crafted to perfection. With our pizza order online option.
+                  {t('Each slice is an adventure, featuring a golden crust that is both crispy and soft, layered with vibrant')}
+                  {t('fresh toppings and rich sauces. Whether you crave classic flavors or bold new combinations, each bite is')}
+                  {t('a flavorful rebellion against boring meals. Experience the best pizza at La Milano Pizzeria. Where every')}
+                  {t('pizza is crafted to perfection. With our pizza order online option.')}
                 </p>
               </div>
             </div>
@@ -96,7 +96,7 @@ const Home = () => {
       <div className="px-4 py-16 bg-gray-90">
         {/* Offer Title */}
         <div className="text-center mb-8">
-          <h2 className="text-3xl font-bold text-red-500 tracking-tight">OFFERS YOU CANOT RESIST</h2>
+          <h2 className="text-3xl font-bold text-red-500 tracking-tight">{t('OFFERS YOU CANOT RESIST')}</h2>
         </div>
 
         <Swiper
@@ -148,7 +148,7 @@ const Home = () => {
       {/* Heading for Pizza Boxes */}
       <div className="text-center my-8">
         <h2 className="text-4xl font-extrabold text-gray-800 font-serif">
-          Sourced Fresh, Made to Wow
+          {t('Sourced Fresh, Made to Wow')}
         </h2>
       </div>
 
@@ -165,13 +165,13 @@ const Home = () => {
               className="rounded-full"
             />
           </div>
-          <h4 className="text-xl font-semibold text-center mb-4 text-gray-800">Buy 1 Get 1 Free Pizza</h4>
+          <h4 className="text-xl font-semibold text-center mb-4 text-gray-800">{t('Buy 1 Get 1 Free Pizza')}</h4>
           <p className="text-sm text-center mb-4 text-gray-600">
-            Sourced Fresh, Made to Wow. Enjoy our signature pizzas at a great price!
+            {t('Sourced Fresh, Made to Wow. Enjoy our signature pizzas at a great price!')}
           </p>
           <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex justify-between w-full px-4">
           <Link href="/dashboard">
-            <button className="bg-red-600 text-white px-4 py-2 rounded-full">Buy Now</button>
+            <button className="bg-red-600 text-white px-4 py-2 rounded-full">{t('Buy Now')}</button>
             </Link>
           </div>
         </div>
@@ -187,13 +187,13 @@ const Home = () => {
               className="rounded-full"
             />
           </div>
-          <h4 className="text-xl font-semibold text-center mb-4 text-gray-800">LA MILANO PANEER</h4>
+          <h4 className="text-xl font-semibold text-center mb-4 text-gray-800">{t('LA MILANO PANEER')}</h4>
           <p className="text-sm text-center mb-4 text-gray-600">
-            Green Capsicum, Crunchy Onion, Spiced Paneer, Golden Corn, Black Olive in Cheese Sauce.
+            {t('Green Capsicum, Crunchy Onion, Spiced Paneer, Golden Corn, Black Olive in Cheese Sauce.')}
           </p>
           <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex justify-between w-full px-4">
           <Link href="/dashboard">
-            <button className="bg-red-600 text-white px-4 py-2 rounded-full">Buy Now</button>
+            <button className="bg-red-600 text-white px-4 py-2 rounded-full">{t('Buy Now')}</button>
             </Link>
           </div>
         </div>
@@ -209,13 +209,13 @@ const Home = () => {
               className="rounded-full"
             />
           </div>
-          <h4 className="text-xl font-semibold text-center mb-4 text-gray-800">Bogo Pizza Near Me</h4>
+          <h4 className="text-xl font-semibold text-center mb-4 text-gray-800">{t('Bogo Pizza Near Me')}</h4>
           <p className="text-sm text-center mb-4 text-gray-600">
-            Dig in with our amazing pizza deals.
+            {t('Dig in with our amazing pizza deals.')}
           </p>
           <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex justify-between w-full px-4">
           <Link href="/dashboard">
-            <button className="bg-red-600 text-white px-4 py-2 rounded-full">Buy Now</button>
+            <button className="bg-red-600 text-white px-4 py-2 rounded-full">{t('Buy Now')}</button>
             </Link>
           </div>
         </div>
@@ -231,13 +231,13 @@ const Home = () => {
               className="rounded-full"
             />
           </div>
-          <h4 className="text-xl font-semibold text-center mb-4 text-gray-800">Authentic Pesto Pasta</h4>
+          <h4 className="text-xl font-semibold text-center mb-4 text-gray-800">{t('Authentic Pesto Pasta')}</h4>
           <p className="text-sm text-center mb-4 text-gray-600">
-            Green Capsicum, Crunchy Onion, Golden Corn, Black Olives with Authentic Pesto Sauce.
+            {t('Green Capsicum, Crunchy Onion, Golden Corn, Black Olives with Authentic Pesto Sauce.')}
           </p>
           <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex justify-between w-full px-4">
           <Link href="/dashboard">
-            <button className="bg-red-600 text-white px-4 py-2 rounded-full">Buy Now</button>
+            <button className="bg-red-600 text-white px-4 py-2 rounded-full">{t('Buy Now')}</button>
             </Link>
           </div>
         </div>
@@ -253,13 +253,13 @@ const Home = () => {
               className="rounded-full"
             />
           </div>
-          <h4 className="text-xl font-semibold text-center mb-4 text-gray-800">Crispy Garlic Bread</h4>
+          <h4 className="text-xl font-semibold text-center mb-4 text-gray-800">{t('Crispy Garlic Bread')}</h4>
           <p className="text-sm text-center mb-4 text-gray-600">
-            Freshly baked bread with garlic butter, a perfect companion to your pizza.
+            {t('Freshly baked bread with garlic butter, a perfect companion to your pizza.')}
           </p>
           <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex justify-between w-full px-4">
           <Link href="/dashboard">
-            <button className="bg-red-600 text-white px-4 py-2 rounded-full">Buy Now</button>
+            <button className="bg-red-600 text-white px-4 py-2 rounded-full">{t('Buy Now')}</button>
             </Link>
           </div>
         </div>
@@ -275,13 +275,13 @@ const Home = () => {
               className="rounded-full"
             />
           </div>
-          <h4 className="text-xl font-semibold text-center mb-4 text-gray-800">Lemon Herb Wings</h4>
+          <h4 className="text-xl font-semibold text-center mb-4 text-gray-800">{t('Lemon Herb Wings')}</h4>
           <p className="text-sm text-center mb-4 text-gray-600">
-            Crispy chicken wings with a tangy lemon herb sauce.
+            {t('Crispy chicken wings with a tangy lemon herb sauce.')}
           </p>
           <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex justify-between w-full px-4">
           <Link href="/dashboard">
-            <button className="bg-red-600 text-white px-4 py-2 rounded-full">Buy Now</button>
+            <button className="bg-red-600 text-white px-4 py-2 rounded-full">{t('Buy Now')}</button>
             </Link>
           </div>
         </div>
@@ -292,9 +292,9 @@ const Home = () => {
       <footer className="bg-red-500 text-white py-6 z-10 relative">
         <div className="container mx-auto text-center">
           <p className="text-lg mb-4">
-            Contact us: 123-456-7890 | support@pizzabliss.com
+            {t('Contact us:')} 123-456-7890 | support@pizzabliss.com
           </p>
-          <p className="text-sm">&copy; 2025 Pizza Bliss. All rights reserved.</p>
+          <p className="text-sm">&copy; {t('2025 Pizza Bliss. All rights reserved.')}</p>
         </div>
       </footer>
     </div>
@@ -303,7 +303,7 @@ const Home = () => {
 
 export const getServerSideProps = async ({ locale }) => {
   if (!locale) {
-    locale = 'en';
+    locale = ['en', 'es', 'hi'];
   }
   return {
     props: {

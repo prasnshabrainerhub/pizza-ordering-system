@@ -34,7 +34,7 @@ const CartPromotions: React.FC<CartPromotionsProps> = ({ coupons, onApplyCoupon,
   if (coupons.length === 0) {
     return (
       <div className="bg-white rounded-lg shadow p-6">
-        <p className="text-gray-500">No active promotions available</p>
+        <p className="text-gray-500">{t('No active promotions available')}</p>
       </div>
     );
   }
@@ -52,19 +52,19 @@ const CartPromotions: React.FC<CartPromotionsProps> = ({ coupons, onApplyCoupon,
               : `₹${mainCoupon.discount_value} off`)}
           </span>
         </div>
-        <p className="text-sm text-gray-600">Code: {mainCoupon.code}</p>
+        <p className="text-sm text-gray-600">{t('Code:')} {mainCoupon.code}</p>
         <div className="flex justify-between mt-4">
           <button 
             onClick={() => onApplyCoupon(mainCoupon)}
             className="text-green-600 font-medium"
           >
-            Apply
+            {t('Apply')}
           </button>
           <button 
             onClick={() => setShowAllCoupons(true)}
             className="text-green-600 font-medium"
           >
-            View More Offers
+            {t('View More Offers')}
           </button>
         </div>
       </div>
@@ -72,7 +72,7 @@ const CartPromotions: React.FC<CartPromotionsProps> = ({ coupons, onApplyCoupon,
       <Dialog open={showAllCoupons} onOpenChange={setShowAllCoupons}>
         <DialogContent className="max-w-2xl text-black">
           <DialogHeader>
-            <DialogTitle>Available Promotions</DialogTitle>
+            <DialogTitle>{t('Available Promotions')}</DialogTitle>
           </DialogHeader>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
             {coupons.map((coupon) => (
@@ -95,7 +95,7 @@ const CartPromotions: React.FC<CartPromotionsProps> = ({ coupons, onApplyCoupon,
                   }}
                   className="mt-2 text-green-600 font-medium"
                 >
-                  Apply
+                  {t('Apply')}
                 </button>
               </div>
             ))}

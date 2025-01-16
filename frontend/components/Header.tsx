@@ -115,7 +115,7 @@ export const Header = () => {
               className="text-4xl font-bold cursor-pointer text-gray-900 hover:text-gray-700 transition-colors font-['Dancing_Script'] hover:scale-105 transform transition-transform" 
               onClick={() => router.push('/')}
             >
-              Pizza Bliss
+              {t('Pizza Bliss')}
             </h1>
           </div>
           {/* Navigation Links */}
@@ -151,9 +151,9 @@ export const Header = () => {
                     className="flex items-center gap-3 px-4 py-2 bg-gray-100 text-gray-800 rounded-lg hover:bg-gray-200 transition-all hover:scale-105"
                   >
                     <User size={20} />
-                    <span className="text-sm font-medium">Hi, {userData.username}</span>
+                    <span className="text-sm font-medium">{t('Hi,')} {userData.username}</span>
                     {userData.role === 'admin' && (
-                      <span className="text-xs bg-gray-900 text-white px-2 py-0.5 rounded">Admin</span>
+                      <span className="text-xs bg-gray-900 text-white px-2 py-0.5 rounded">{t('Admin')}</span>
                     )}
                   </button>
                   
@@ -165,14 +165,14 @@ export const Header = () => {
                           className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 w-full text-left transition-colors"
                         >
                           <Package size={16} />
-                          Orders
+                          {t('Orders')}
                         </button>
                         <button 
                           onClick={handleLogout}
                           className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 w-full text-left transition-colors"
                         >
                           <span>🚪</span>
-                          Logout
+                          {t('Logout')}
                         </button>
                       </div>
                     </div>
@@ -194,19 +194,19 @@ export const Header = () => {
                   <div className="py-1">
                     <button className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 w-full text-left transition-colors">
                       <span>ℹ️</span>
-                      About Us
+                      {t('About Us')}
                     </button>
                     <button className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 w-full text-left transition-colors">
                       <span>🔒</span>
-                      Privacy Policy
+                      {t('Privacy Policy')}
                     </button>
                     <button className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 w-full text-left transition-colors">
                       <span>📋</span>
-                      Terms and Conditions
+                      {t('Terms and Conditions')}
                     </button>
                     <button className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 w-full text-left transition-colors">
                       <span>💰</span>
-                      Refund & Cancellation
+                      {t('Refund & Cancellation')}
                     </button>
                   </div>
                 </div>

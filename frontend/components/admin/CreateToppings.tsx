@@ -102,13 +102,13 @@ export const ToppingManagement: React.FC = () => {
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-xl font-semibold">Manage Toppings</h2>
+        <h2 className="text-xl font-semibold">{t('Manage Toppings')}</h2>
         <button
           onClick={() => setIsAddingTopping(true)}
           className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 flex items-center gap-2"
         >
           <Plus size={20} />
-          Add Topping
+          {t('Add Topping')}
         </button>
       </div>
 
@@ -116,7 +116,7 @@ export const ToppingManagement: React.FC = () => {
         <form onSubmit={handleSubmit} className="mb-6 bg-gray-50 p-4 rounded-lg">
           <div className="grid grid-cols-1 gap-4">
             <div>
-              <label className="block text-sm font-medium mb-1">Name</label>
+              <label className="block text-sm font-medium mb-1">{t('Name')}</label>
               <input
                 type="text"
                 value={formData.name}
@@ -126,7 +126,7 @@ export const ToppingManagement: React.FC = () => {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1">Price</label>
+              <label className="block text-sm font-medium mb-1">{t('Price')}</label>
               <input
                 type="number"
                 step="0.01"
@@ -144,7 +144,7 @@ export const ToppingManagement: React.FC = () => {
                   onChange={(e) => setFormData({ ...formData, is_vegetarian: e.target.checked })}
                   className="mr-2"
                 />
-                <span className="text-sm font-medium">Vegetarian</span>
+                <span className="text-sm font-medium">{t('Vegetarian')}</span>
               </label>
             </div>
           </div>
@@ -153,7 +153,7 @@ export const ToppingManagement: React.FC = () => {
               type="submit"
               className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
             >
-              {editingTopping ? 'Update' : 'Add'} Topping
+              {editingTopping ? 'Update' : 'Add'} {t('Topping')}
             </button>
             <button
               type="button"
@@ -174,10 +174,10 @@ export const ToppingManagement: React.FC = () => {
         <table className="min-w-full">
           <thead className="bg-gray-50">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Vegetarian</th>
-              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('Name')}</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('Price')}</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('Vegetarian')}</th>
+              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">{t('Actions')}</th>
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">

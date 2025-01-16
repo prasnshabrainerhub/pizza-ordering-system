@@ -107,7 +107,7 @@ const Checkout = () => {
           {/* Secure Payment Header */}
           <div className="flex items-center gap-2 mb-12">
             <Check className="text-green-600 w-7 h-7" />
-            <h1 className="text-3xl font-normal text-black">Secure Payment Options</h1>
+            <h1 className="text-3xl font-normal text-black">{t('Secure Payment Options')}</h1>
           </div>
 
           {/* Payment Card */}
@@ -120,7 +120,7 @@ const Checkout = () => {
                 <ArrowLeft className="w-8 h-8" />
               </button>
               <div className="flex items-center gap-3">
-                <span className="text-2xl font-normal text-black">To Pay</span>
+                <span className="text-2xl font-normal text-black">{t('To Pay')}</span>
                 <span className="text-2xl font-normal text-red-500">₹{calculateTotal()}</span>
               </div>
               <div className="w-8" />
@@ -173,7 +173,7 @@ const Checkout = () => {
 
 export const getServerSideProps = async ({ locale }) => {
   if (!locale) {
-    locale = 'en';
+    locale = ['en', 'es', 'hi'];
   }
   return {
     props: {

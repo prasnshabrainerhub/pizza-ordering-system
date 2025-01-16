@@ -105,7 +105,7 @@ export const SignUpModal: React.FC<SignUpModalProps> = ({ isOpen, onClose }) => 
           <X size={20} />
         </button>
 
-        <h2 className="text-2xl font-semibold mb-6">Sign Up to Continue</h2>
+        <h2 className="text-2xl font-semibold mb-6">{t('Sign Up to Continue')}</h2>
 
         {error && (
           <div className="mb-4 p-2 bg-red-100 text-red-600 rounded-lg text-sm">
@@ -174,8 +174,8 @@ export const SignUpModal: React.FC<SignUpModalProps> = ({ isOpen, onClose }) => 
               onChange={handleChange}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
             >
-              <option value="user">User</option>
-              <option value="admin">Admin</option>
+              <option value="user">{t('User')}</option>
+              <option value="admin">{t('Admin')}</option>
             </select>
           </div>
           <button
@@ -188,12 +188,12 @@ export const SignUpModal: React.FC<SignUpModalProps> = ({ isOpen, onClose }) => 
         </form>
 
         <div className="mt-4 text-center text-sm">
-          <span>Already have an account? </span>
+          <span>{t('Already have an account?')} </span>
           <button
             onClick={onClose}
             className="text-blue-500 hover:underline"
           >
-            Login
+            {('Login')}
           </button>
         </div>
       </div>

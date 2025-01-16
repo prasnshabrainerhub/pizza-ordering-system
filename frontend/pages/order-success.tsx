@@ -187,7 +187,7 @@ const OrderSuccessPage = () => {
 
 export const getServerSideProps = async ({ locale }) => {
   if (!locale) {
-    locale = 'en';
+    locale = ['en', 'es', 'hi'];
   }
   return {
     props: {

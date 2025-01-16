@@ -41,8 +41,7 @@ export const LanguageSwitcher = () => {
         { locale: newLocale, scroll: false }
       );
       
-      // Reload the page to ensure translations are updated
-      router.reload();
+      router.push(router.asPath);
     } catch (error) {
       console.error('Error changing language:', error);
     }
@@ -65,7 +64,7 @@ export const LanguageSwitcher = () => {
         <DialogHeader>
           <DialogTitle>{t('selectLanguage', 'Select Language')}</DialogTitle>
           <DialogDescription>
-            Choose your preferred language from the options below
+            {t('Choose your preferred language from the options below')}
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">

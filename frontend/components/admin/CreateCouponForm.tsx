@@ -135,13 +135,13 @@ export const CouponManagement: React.FC = () => {
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-xl font-semibold">Manage Coupons</h2>
+        <h2 className="text-xl font-semibold">{t('Manage Coupons')}</h2>
         <button
           onClick={() => setIsAddingCoupon(true)}
           className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 flex items-center gap-2"
         >
           <Plus size={20} />
-          Add Coupon
+          {t('Add Coupon')}
         </button>
       </div>
 
@@ -149,7 +149,7 @@ export const CouponManagement: React.FC = () => {
         <form onSubmit={handleSubmit} className="mb-6 bg-gray-50 p-4 rounded-lg">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium mb-1">Code</label>
+              <label className="block text-sm font-medium mb-1">{t('Code')}</label>
               <input
                 type="text"
                 value={formData.code}
@@ -159,7 +159,7 @@ export const CouponManagement: React.FC = () => {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1">Description</label>
+              <label className="block text-sm font-medium mb-1">{t('Description')}</label>
               <input
                 type="text"
                 value={formData.description}
@@ -168,19 +168,19 @@ export const CouponManagement: React.FC = () => {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1">Discount Type</label>
+              <label className="block text-sm font-medium mb-1">{t('Discount Type')}</label>
               <select
                 value={formData.discount_type}
                 onChange={(e) => setFormData({ ...formData, discount_type: e.target.value as DiscountType })}
                 className="w-full p-2 border rounded"
               >
-                <option value={DiscountType.PERCENTAGE}>Percentage</option>
-                <option value={DiscountType.FIXED}>Fixed Amount</option>
+                <option value={DiscountType.PERCENTAGE}>{t('Percentage')}</option>
+                <option value={DiscountType.FIXED}>{t('Fixed Amount')}</option>
               </select>
             </div>
             <div>
               <label className="block text-sm font-medium mb-1">
-                Discount Value ({formData.discount_type === DiscountType.PERCENTAGE ? '%' : '₹'})
+                {t('Discount Value')} ({formData.discount_type === DiscountType.PERCENTAGE ? '%' : '₹'})
               </label>
               <input
                 type="number"
@@ -191,7 +191,7 @@ export const CouponManagement: React.FC = () => {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1">Valid From</label>
+              <label className="block text-sm font-medium mb-1">{t('Valid From')}</label>
               <input
                 type="datetime-local"
                 value={formData.valid_from}
@@ -201,7 +201,7 @@ export const CouponManagement: React.FC = () => {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1">Valid Until</label>
+              <label className="block text-sm font-medium mb-1">{t('Valid Until')}</label> 
               <input
                 type="datetime-local"
                 value={formData.valid_until}
@@ -211,7 +211,7 @@ export const CouponManagement: React.FC = () => {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1">Min Order Value (₹)</label>
+              <label className="block text-sm font-medium mb-1">{t('Min Order Value')} (₹)</label>
               <input
                 type="number"
                 value={formData.min_order_value}
@@ -220,7 +220,7 @@ export const CouponManagement: React.FC = () => {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1">Max Discount (₹)</label>
+              <label className="block text-sm font-medium mb-1">{t('Max Discount')} (₹)</label>
               <input
                 type="number"
                 value={formData.max_discount}
@@ -229,7 +229,7 @@ export const CouponManagement: React.FC = () => {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1">Usage Limit</label>
+              <label className="block text-sm font-medium mb-1">{t('Usage Limit')}</label>
               <input
                 type="number"
                 value={formData.usage_limit || ''}
@@ -243,7 +243,7 @@ export const CouponManagement: React.FC = () => {
               type="submit"
               className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
             >
-              {editingCoupon ? 'Update' : 'Add'} Coupon
+              {editingCoupon ? 'Update' : 'Add'} {t('Coupon')}
             </button>
             <button
               type="button"
@@ -264,7 +264,7 @@ export const CouponManagement: React.FC = () => {
               }}
               className="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400"
             >
-              Cancel
+             {t(' Cancel')}
             </button>
           </div>
         </form>
@@ -274,12 +274,12 @@ export const CouponManagement: React.FC = () => {
         <table className="min-w-full">
           <thead className="bg-gray-50">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Code</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Description</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Discount</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Valid Period</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Usage</th>
-              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('Code')}</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('Description')}</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('Discount')}</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('Valid Period')}</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('Usage')}</th>
+              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">{t('Actions')}</th>
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">

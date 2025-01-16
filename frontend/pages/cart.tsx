@@ -122,18 +122,18 @@ const Cart = () => {
         <div className="max-w-6xl mx-auto p-4">
           <Link href="/dashboard" className="inline-flex items-center gap-2 mb-6 text-green-600">
             <ArrowLeft size={24} />
-            <span className="font-medium">Back</span>
+            <span className="font-medium">{t('Back')}</span>
           </Link>
 
           <div className="flex flex-col items-center justify-center bg-white rounded-lg shadow p-8">
             <ShoppingBag size={64} className="text-gray-400 mb-4" />
-            <h2 className="text-2xl font-medium text-gray-800 mb-2">Your cart is empty</h2>
-            <p className="text-gray-600 mb-6">Add some delicious pizzas to your cart!</p>
+            <h2 className="text-2xl font-medium text-gray-800 mb-2">{t('Your cart is empty')}</h2>
+            <p className="text-gray-600 mb-6">{t('Add some delicious pizzas to your cart!')}</p>
             <Link 
               href="/dashboard" 
               className="px-6 py-3 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition-colors"
             >
-              Start Ordering
+              {t('Start Ordering')}
             </Link>
           </div>
         </div>
@@ -148,7 +148,7 @@ const Cart = () => {
       <div className="max-w-6xl mx-auto p-4">
         <Link href="/dashboard" className="inline-flex items-center gap-2 mb-6 text-green-600">
           <ArrowLeft size={24} />
-          <span className="font-medium">Back</span>
+          <span className="font-medium">{t('Back')}</span>
         </Link>
 
         <div className="grid grid-cols-1 text-gray-800 md:grid-cols-2 gap-6">
@@ -172,7 +172,7 @@ const Cart = () => {
                       {item.toppings?.length > 0 && (
                         <div className="text-sm text-gray-500 mb-2">
                           {item.toppings.map((topping, index) => (
-                            <div key={index}>{topping} - 0</div>
+                            <div key={index}>{topping}</div>
                           ))}
                         </div>
                       )}
@@ -198,7 +198,7 @@ const Cart = () => {
                         onClick={() => removeFromCart(item.pizzaId)}
                         className="text-red-500"
                       >
-                        <span className="sr-only">Remove</span>
+                        <span className="sr-only">{t('Remove')}</span>
                         🗑️
                       </button>
                     </div>
@@ -228,14 +228,14 @@ const Cart = () => {
 
             {/* My Basket Box */}
             <div className="bg-white rounded-lg shadow p-6">
-              <h2 className="font-medium mb-6">My Basket</h2>
+              <h2 className="font-medium mb-6">{t('My Basket')}</h2>
               <div className="space-y-4 text-sm">
                 <div className="flex justify-between">
-                  <span>Sub Total:</span>
+                  <span>{t('Sub Total:')}</span>
                   <span>₹{calculateSubTotal()}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span>Discounts:</span>
+                  <span>{t('Discounts:')}</span>
                   <span className="text-green-600">-₹{calculateDiscount()}</span>
                 </div>
                 {error && (
@@ -245,20 +245,20 @@ const Cart = () => {
                 )}
                 {appliedCoupon && (
                   <div className="text-green-600 text-sm">
-                    Coupon applied: {appliedCoupon.code}
+                    {t('Coupon applied')}: {appliedCoupon.code}
                   </div>
                 )}
                 <div className="flex justify-between">
-                  <span>GST:</span>
+                  <span>{t('GST')}:</span>
                   <span>₹{calculateGST().toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span>Round Off:</span>
+                  <span>{t('Round Off')}:</span>
                   <span>₹{calculateRoundOff().toFixed(2)}</span>
                 </div>
                 <div className="pt-4 border-t">
                   <div className="flex justify-between font-medium text-lg">
-                    <span>Total To Pay:</span>
+                    <span>{t('Total To Pay:')}</span>
                     <span className="text-green-600">₹{calculateTotal()}</span>
                   </div>
                 </div>
@@ -267,14 +267,14 @@ const Cart = () => {
               <div className="space-y-4 mt-6">
                 <div className="grid grid-cols-2 gap-4">
                   <button className="w-full py-3 bg-green-600 text-white rounded-lg">
-                    Delivery
+                    {t('Delivery')}
                   </button>
                   <button className="w-full py-3 border border-green-600 text-green-600 rounded-lg">
-                    Pick up
+                    {t('Pick up')}
                   </button>
                 </div>
                 <Link href="/checkout" className="w-full py-3 bg-green-600 text-white rounded-lg font-medium flex items-center justify-center gap-2">
-                  <span>CHECKOUT!</span>
+                  <span>{t('CHECKOUT!')}</span>
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                   </svg>
@@ -290,7 +290,7 @@ const Cart = () => {
 
 export const getServerSideProps = async ({ locale }) => {
   if (!locale) {
-    locale = 'en';
+    locale = ['en', 'es', 'hi'];
   }
   return {
     props: {

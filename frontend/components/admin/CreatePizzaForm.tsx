@@ -190,13 +190,13 @@ export const PizzaManagement: React.FC = () => {
     return (
         <div>
             <div className="flex justify-between items-center mb-6">
-                <h2 className="text-xl font-semibold">Manage Pizzas</h2>
+                <h2 className="text-xl font-semibold">{t('Manage Pizzas')}</h2>
                 <button
                     onClick={() => setIsAddingPizza(true)}
                     className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 flex items-center gap-2"
                 >
                     <Plus size={20} />
-                    Add Pizza
+                    {t('Add Pizza')}
                 </button>
             </div>
 
@@ -228,7 +228,7 @@ export const PizzaManagement: React.FC = () => {
                                 ) : (
                                     <Upload className="w-12 h-12 text-gray-400 mb-2" />
                                 )}
-                                <span className="text-sm text-gray-500">Upload Pizza Image</span>
+                                <span className="text-sm text-gray-500">{t('Upload Pizza Image')}</span>
                             </div>
                         </label>
                     </div>
@@ -236,7 +236,7 @@ export const PizzaManagement: React.FC = () => {
                     {/* Basic Information */}
                     <div className="space-y-4">
                         <div>
-                            <label className="block text-sm font-medium text-gray-700">Name</label>
+                            <label className="block text-sm font-medium text-gray-700">{t('Name')}</label>
                             <input
                                 type="text"
                                 value={formData.name}
@@ -247,7 +247,7 @@ export const PizzaManagement: React.FC = () => {
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-gray-700">Description</label>
+                            <label className="block text-sm font-medium text-gray-700">{t('Description')}</label>
                             <textarea
                                 value={formData.description}
                                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
@@ -268,7 +268,7 @@ export const PizzaManagement: React.FC = () => {
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-gray-700">Category</label>
+                            <label className="block text-sm font-medium text-gray-700">{t('Category')}</label>
                             <select
                                 value={formData.category}
                                 onChange={(e) => setFormData({ ...formData, category: e.target.value })}
@@ -284,7 +284,7 @@ export const PizzaManagement: React.FC = () => {
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-gray-700">Sizes</label>
+                            <label className="block text-sm font-medium text-gray-700">{t('Sizes')}</label>
                             <div className="space-y-2">
                                 {formData.sizes.map((size, index) => (
                                     <div key={size.size} className="flex items-center gap-4">
@@ -305,14 +305,14 @@ export const PizzaManagement: React.FC = () => {
                                 type="submit"
                                 className="flex-1 bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600"
                             >
-                                {editingPizza ? 'Update' : 'Create'} Pizza
+                                {editingPizza ? 'Update' : 'Create'} {t('Pizza')}
                             </button>
                             <button
                                 type="button"
                                 onClick={resetForm}
                                 className="px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300"
                             >
-                                Cancel
+                                {t('Cancel')}
                             </button>
                         </div>
                     </div>
@@ -324,11 +324,11 @@ export const PizzaManagement: React.FC = () => {
                 <table className="min-w-full">
                     <thead className="bg-gray-50">
                         <tr>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Image</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Category</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Base Price</th>
-                            <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('Image')}</th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('Name')}</th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('Category')}</th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('Base Price')}</th>
+                            <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">{t('Actions')}</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-200">
