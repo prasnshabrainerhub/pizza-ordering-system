@@ -1,13 +1,3 @@
-from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session
-from app.core.database import get_db
-from app.schema.user import UserCreate, UserLogin, Token
-from app.services.auth_services import AuthService
-from app.core.security import create_access_token, create_refresh_token
-from typing import Any
-
-router = APIRouter()
-
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from app.core.database import get_db
@@ -20,12 +10,24 @@ router = APIRouter()
 
 @router.post("/register", status_code=status.HTTP_201_CREATED)
 def register(user: UserCreate, db: Session = Depends(get_db)):
+    # Validate role field is present
+    if not hasattr(user, 'role'):
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=[{
+                "loc": ["body", "role"],
+                "msg": "Field required",
+                "type": "value_error.missing"
+            }]
+        )
+    
     # Check if email already exists
     if AuthService.get_user_by_email(db, user.email):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Email is already registered."
         )
+    
     db_user = AuthService.register_user(db, user)
     return {"message": "User registered successfully", "user_id": db_user.user_id}
 
@@ -49,7 +51,7 @@ def login(user_data: UserLogin, db: Session = Depends(get_db)):
     return {
         "access_token": access_token,
         "refresh_token": refresh_token,
-        "message": "Login successful",
+        "message": "Login successful",  # Added message field
         "username": user.username,
         "email": user.email,
         "role": user.role,

@@ -1,70 +1,27 @@
 {
-  "header": {
-    "cart": "Cart",
-    "logout": "Logout",
-    "login": "Login"
-  },
-  "cart": {
-    "empty": "Your cart is empty",
-    "addPizzas": "Add some delicious pizzas to your cart!",
-    "startOrdering": "Start Ordering",
-    "back": "Back",
-    "subTotal": "Sub Total",
-    "discounts": "Discounts",
-    "gst": "GST",
-    "roundOff": "Round Off",
-    "totalToPay": "Total To Pay",
-    "specialInstructions": "Mention your special instructions here...",
-    "checkout": "CHECKOUT!"
-  },
-  "checkout": {
-    "securePayment": "Secure Payment Options",
-    "toPay": "To Pay",
-    "cashOnDelivery": "Cash On Delivery",
-    "online": "Online",
-    "processing": "Processing..."
-  },
   "dashboard": {
-  "admin": {
-    "backButton": "← Back",
-    "manageOrders": "Manage Orders",
-    "managePizzas": "Manage Pizzas",
-    "manageCoupons": "Manage Coupons",
-    "manageToppings": "Manage Toppings"
-  },
-  "pizzas": {
-    "categories": {
-      "category1": "Pizza Category 1",
-      "category2": "Pizza Category 2",
-      "category3": "Pizza Category 3",
-      "category4": "Pizza Category 4",
-      "category5": "Pizza Category 5"
+    "language": "हिन्दी",
+    "title": "पिज़्ज़ा ब्लिस",
+    "categories": "श्रेणियाँ",
+    "buy1get4": "1 खरीदें 4 पाएं",
+    "veg_pizza": "शाकाहारी पिज़्ज़ा",
+    "non_veg": "गैर-शाकाहारी",
+    "classic_mania": "क्लासिक मैनिया",
+    "drinks": "पेय पदार्थ",
+    "location": {
+      "city": "अहमदाबाद",
+      "address": "दुकान 24 मेपल ट्रेड सेंटर, सुरधारा सर्किल के पास, थलतेज, अहमदाबाद, गुजरात 380054",
+      "phone": "9809270404",
+      "open_till": "1 AM तक खुला"
     },
-    "classic": {
-      "name": "Classic Margherita",
-      "description": "Fresh tomatoes, mozzarella, and basil."
+    "promos": {
+      "header": "प्रोमो",
+      "promo1": "पहली बार पर 25 रु की छूट",
+      "promo2": "70 रु तक बचत करें",
+      "promo3": "नए उपयोगकर्ताओं के लिए",
+      "promo4": "30 रु तक की छूट",
+      "promo5": "1 खरीदें 1 मुफ्त पाएं"
     },
-    "pepperoni": {
-      "name": "Pepperoni Feast",
-      "description": "Loaded with pepperoni and cheese."
-    },
-    "veggie": {
-      "name": "Veggie Supreme",
-      "description": "Topped with fresh vegetables."
-    },
-    "hawaiian": {
-      "name": "Hawaiian Paradise",
-      "description": "Topped with ham, pineapple, and cheese."
-    },
-    "meatLovers": {
-      "name": "Meat Lovers",
-      "description": "Loaded with pepperoni, sausage, and bacon."
-    }
-  },
-  "sizes": {
-    "small": "Small",
-    "medium": "Medium",
-    "large": "Large"
+    "use_code": "कोड का उपयोग करें"
   }
-}
 }

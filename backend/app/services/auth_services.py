@@ -1,4 +1,4 @@
-from fastapi import HTTPException
+from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 import datetime
 from passlib.context import CryptContext
@@ -21,7 +21,10 @@ class AuthService:
     def register_user(db: Session, user: UserCreate) -> User:
         db_user = db.query(User).filter(User.email == user.email).first()
         if db_user:
-            raise HTTPException(status_code=400, detail="Email already registered")
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Email is already registered."
+            )
         
         hashed_password = AuthService.get_password_hash(user.password)
         refresh_token_data = {"email": user.email, "username": user.username}
@@ -30,11 +33,11 @@ class AuthService:
             email=user.email,
             username=user.username,
             hashed_password=hashed_password,
-            role=user.role,
+            role=user.role.lower(),  # Ensure role is lowercase
             phone_number=user.phone_number,
             address=user.address,
             refresh_token=refresh_token,
-            created_at=datetime.datetime.utcnow(),
+            created_at=datetime.datetime.now(datetime.UTC),  # Updated to use timezone-aware datetime
         )
         db.add(db_user)
         db.commit()
@@ -45,7 +48,10 @@ class AuthService:
     def authenticate_user(db: Session, email: str, password: str) -> User:
         user = db.query(User).filter(User.email == email).first()
         if not user or not AuthService.verify_password(password, user.hashed_password):
-            raise HTTPException(status_code=400, detail="Incorrect email or password")
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,  # Changed from 400 to 401
+                detail="Incorrect email or password."
+            )
         return user
     
     @staticmethod

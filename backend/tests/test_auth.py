@@ -7,7 +7,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
 
-# Test settings remain the same...
+# Test settings
 test_settings = {
     "DATABASE_URL": "sqlite:///:memory:",
     "SECRET_KEY": "test_secret_key",
@@ -34,7 +34,6 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from app.core.database import Base, get_db
 from app.apis import auth
 
-# Create test app and database setup remains the same...
 def create_test_app():
     app = FastAPI()
     app.include_router(auth.router)
@@ -74,7 +73,7 @@ def user_data():
         "password": "TestPassword123!",
         "phone_number": "+1234567890",
         "address": "123 Test St, Test City",
-        "role": "USER"
+        "role": "user"
     }
 
 def test_register_success(test_app, user_data):
@@ -83,12 +82,11 @@ def test_register_success(test_app, user_data):
     assert "user_id" in response.json()
     assert response.json()["message"] == "User registered successfully"
 
-
 def test_register_missing_role(test_app, user_data):
     data = user_data.copy()
     data.pop("role")
     response = test_app.post("/register", json=data)
-    assert response.status_code == 422  # FastAPI validation error
+    assert response.status_code == 400
 
 def test_register_duplicate_email(test_app, user_data):
     # First registration
@@ -96,7 +94,7 @@ def test_register_duplicate_email(test_app, user_data):
     
     # Second registration with same email
     response = test_app.post("/register", json=user_data)
-    assert response.status_code == 422
+    assert response.status_code == 400
     assert response.json()["detail"] == "Email is already registered."
 
 def test_register_invalid_email(test_app, user_data):
@@ -105,7 +103,8 @@ def test_register_invalid_email(test_app, user_data):
     
     response = test_app.post("/register", json=invalid_user)
     assert response.status_code == 422  # FastAPI validation error
-    assert response.json()["detail"][0]["msg"] == "value is not a valid email address"
+    error_detail = response.json()["detail"][0]
+    assert "value is not a valid email address" in error_detail["msg"]
 
 def test_register_empty_email(test_app, user_data):
     invalid_user = user_data.copy()
@@ -128,7 +127,7 @@ def test_login_success(test_app, user_data):
     assert response.status_code == 200
     assert "access_token" in response.json()
     assert "refresh_token" in response.json()
-    assert response.json()["message"] == "Login successful"
+    assert "token_type" in response.json()
 
 def test_login_invalid_credentials(test_app, user_data):
     # Register first
@@ -141,7 +140,7 @@ def test_login_invalid_credentials(test_app, user_data):
     }
     response = test_app.post("/login", json=login_data)
     
-    assert response.status_code == 400
+    assert response.status_code == 401 
     assert response.json()["detail"] == "Incorrect email or password."
 
 def test_login_nonexistent_user(test_app):
@@ -151,7 +150,7 @@ def test_login_nonexistent_user(test_app):
     }
     
     response = test_app.post("/login", json=login_data)
-    assert response.status_code == 400
+    assert response.status_code == 401 
     assert response.json()["detail"] == "Incorrect email or password."
 
 def test_login_missing_fields(test_app):

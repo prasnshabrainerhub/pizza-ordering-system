@@ -15,7 +15,7 @@ import { useTranslation } from 'react-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 
 const Dashboard: React.FC = () => {
-  const { t } = useTranslation();
+  const { t } = useTranslation('common');
   const [pizzas, setPizzas] = useState<Pizza[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
@@ -378,12 +378,9 @@ const Dashboard: React.FC = () => {
 
 
 export const getServerSideProps = async ({ locale }) => {
-  if (!locale) {
-    locale = 'en';
-  }
   return {
     props: {
-      ...(await serverSideTranslations(locale, ['common'])),
+      ...(await serverSideTranslations(locale ?? 'en', ['common'])),
     },
   };
 };
