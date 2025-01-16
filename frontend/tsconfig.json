@@ -23,6 +23,6 @@
       "@/*": ["./*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "pages/signup.jsx", "pages/index.js", "pages/orders.js", "components/LanguageSwitcher.js"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "pages/signup.jsx", "pages/index.js", "pages/orders.js", "components/LanguageSwitcher.tsx"],
   "exclude": ["node_modules"]
 }

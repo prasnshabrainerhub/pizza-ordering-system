@@ -5,8 +5,13 @@ import { ArrowLeft, ShoppingBag } from 'lucide-react';
 import Link from 'next/link';
 import { Header } from '../components/Header';
 import CartPromotions from "../components/CartPromotions";
+import { useTranslation } from 'next-i18next';
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+
+
 
 const Cart = () => {
+  const { t } = useTranslation('common');
   const { items, removeFromCart, updateQuantity } = useCart();
   const [coupons, setCoupons] = useState([]);
   const [loadingCoupons, setLoadingCoupons] = useState(true);
@@ -281,6 +286,17 @@ const Cart = () => {
       </div>
     </div>
   );
+};
+
+export const getServerSideProps = async ({ locale }) => {
+  if (!locale) {
+    locale = 'en';
+  }
+  return {
+    props: {
+      ...(await serverSideTranslations(locale, ['common'])),
+    },
+  };
 };
 
 export default Cart;

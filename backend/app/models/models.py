@@ -21,7 +21,7 @@ class User(Base):
     role = Column(SQLAlchemyEnum(UserRole), default=UserRole.USER)
     refresh_token = Column(String, nullable=True)
     phone_number = Column(String)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.now(timezone.utc))
     address = Column(String)
     orders = relationship("Order", back_populates="user")
 

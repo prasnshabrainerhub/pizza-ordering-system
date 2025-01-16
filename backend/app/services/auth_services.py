@@ -47,3 +47,7 @@ class AuthService:
         if not user or not AuthService.verify_password(password, user.hashed_password):
             raise HTTPException(status_code=400, detail="Incorrect email or password")
         return user
+    
+    @staticmethod
+    def get_user_by_email(db: Session, email: str):
+        return db.query(User).filter(User.email == email).first()

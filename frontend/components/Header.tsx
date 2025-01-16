@@ -4,7 +4,8 @@ import { ShoppingCart, LogIn, MoreVertical, Home, User, Package } from 'lucide-r
 import { LoginModal } from './LoginModal';
 import { useRouter } from 'next/navigation';
 import { useCart } from '../components/CartContext';
-import Link from 'next/link';
+import { clearUserData } from './SignUpModel';
+import { LanguageSwitcher } from './LanguageSwitcher';
 
 const FontImports = () => (
   <style jsx global>{`
@@ -79,6 +80,7 @@ export const Header = () => {
   };
 
   const handleLogout = () => {
+    clearUserData()
     localStorage.removeItem('access_token');
     localStorage.removeItem('refresh_token');
     setUserData(null);
@@ -102,6 +104,7 @@ export const Header = () => {
         <nav className="container mx-auto flex justify-between items-center px-6">
           {/* Logo and Home Button Section */}
           <div className="flex items-center gap-12">
+          <LanguageSwitcher />
             <button 
               className="flex items-center gap-2 hover:text-gray-600 transition-colors group" 
               onClick={() => router.push('/')}

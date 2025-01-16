@@ -1,0 +1,70 @@
+{
+  "header": {
+    "cart": "Cart",
+    "logout": "Logout",
+    "login": "Login"
+  },
+  "cart": {
+    "empty": "Your cart is empty",
+    "addPizzas": "Add some delicious pizzas to your cart!",
+    "startOrdering": "Start Ordering",
+    "back": "Back",
+    "subTotal": "Sub Total",
+    "discounts": "Discounts",
+    "gst": "GST",
+    "roundOff": "Round Off",
+    "totalToPay": "Total To Pay",
+    "specialInstructions": "Mention your special instructions here...",
+    "checkout": "CHECKOUT!"
+  },
+  "checkout": {
+    "securePayment": "Secure Payment Options",
+    "toPay": "To Pay",
+    "cashOnDelivery": "Cash On Delivery",
+    "online": "Online",
+    "processing": "Processing..."
+  },
+  "dashboard": {
+  "admin": {
+    "backButton": "← Back",
+    "manageOrders": "Manage Orders",
+    "managePizzas": "Manage Pizzas",
+    "manageCoupons": "Manage Coupons",
+    "manageToppings": "Manage Toppings"
+  },
+  "pizzas": {
+    "categories": {
+      "category1": "Pizza Category 1",
+      "category2": "Pizza Category 2",
+      "category3": "Pizza Category 3",
+      "category4": "Pizza Category 4",
+      "category5": "Pizza Category 5"
+    },
+    "classic": {
+      "name": "Classic Margherita",
+      "description": "Fresh tomatoes, mozzarella, and basil."
+    },
+    "pepperoni": {
+      "name": "Pepperoni Feast",
+      "description": "Loaded with pepperoni and cheese."
+    },
+    "veggie": {
+      "name": "Veggie Supreme",
+      "description": "Topped with fresh vegetables."
+    },
+    "hawaiian": {
+      "name": "Hawaiian Paradise",
+      "description": "Topped with ham, pineapple, and cheese."
+    },
+    "meatLovers": {
+      "name": "Meat Lovers",
+      "description": "Loaded with pepperoni, sausage, and bacon."
+    }
+  },
+  "sizes": {
+    "small": "Small",
+    "medium": "Medium",
+    "large": "Large"
+  }
+}
+}

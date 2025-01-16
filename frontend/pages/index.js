@@ -4,8 +4,11 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/swiper-bundle.min.css';
 import {Navigation} from "swiper";
 import { Header } from '../components/Header';
+import { useTranslation } from 'react-i18next';
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 
 const Home = () => {
+  const { t } = useTranslation();
   return (
     <div className="relative min-h-screen w-full">
       <div>
@@ -296,6 +299,17 @@ const Home = () => {
       </footer>
     </div>
   );
+};
+
+export const getServerSideProps = async ({ locale }) => {
+  if (!locale) {
+    locale = 'en';
+  }
+  return {
+    props: {
+      ...(await serverSideTranslations(locale, ['common'])),
+    },
+  };
 };
 
 export default Home;

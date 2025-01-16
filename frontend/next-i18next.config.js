@@ -1,8 +1,9 @@
-// next-i18next.config.js
 module.exports = {
-    i18n: {
-      defaultLocale: 'en',
-      locales: ['en', 'es'], // Add supported languages
-    },
-  };
-  
+  i18n: {
+    defaultLocale: 'en',
+    locales: ['en', 'es', 'hi'], // English, Spanish, Hindi
+    localeDetection: true,
+  },
+  defaultNS: 'common',
+  localePath: './public/locales',
+};

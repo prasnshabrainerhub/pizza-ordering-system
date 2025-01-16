@@ -3,89 +3,75 @@ import { ArrowLeft, Eye } from 'lucide-react';
 import { jwtDecode } from 'jwt-decode';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useRouter } from 'next/router';
+import { useTranslation } from 'next-i18next';
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 
-// Utility function for WebSocket management
 const useOrderSocket = () => {
+  const {t} = useTranslation('common');
   const [socket, setSocket] = useState(null);
+  const [isConnected, setIsConnected] = useState(false);
+  const [error, setError] = useState(null);
 
-  useEffect(() => {
-    const connectWebSocket = () => {
-      try {
-        const token = localStorage.getItem('access_token');
-        if (!token) {
-          console.error('No access token found');
-          return;
-        }
+  const connect = useCallback(() => {
+    const token = localStorage.getItem('access_token');
+    if (!token) {
+      setError('No authentication token found');
+      return;
+    }
 
-        console.log('Attempting WebSocket connection...');
-        const ws = new WebSocket(`ws://localhost:8000/ws/orders?token=${encodeURIComponent(token)}`);
+    const ws = new WebSocket(`ws://localhost:8000/ws/orders?token=${encodeURIComponent(token)}`);
+    
+    ws.onopen = () => {
+      console.log('WebSocket connected');
+      setIsConnected(true);
+      setError(null);
+    };
 
-        ws.onopen = () => {
-          console.log('WebSocket connection established');
-        };
-
-        ws.onmessage = (event) => {
-          try {
-            const data = JSON.parse(event.data);
-            console.log('Received WebSocket message:', data);
-            // Handle your message here
-          } catch (e) {
-            console.error('Error parsing WebSocket message:', e);
-          }
-        };
-
-        ws.onerror = (error) => {
-          console.error('WebSocket Error:', {
-            error,
-            readyState: ws.readyState,
-            url: ws.url
-          });
-        };
-
-        ws.onclose = (event) => {
-          console.log('WebSocket connection closed:', {
-            code: event.code,
-            reason: event.reason,
-            wasClean: event.wasClean
-          });
-          
-          // Attempt to reconnect unless it was a clean closure
-          if (event.code !== 1000) {
-            console.log('Attempting to reconnect...');
-            setTimeout(connectWebSocket, 5000);
-          }
-        };
-
-        setSocket(ws);
-      } catch (error) {
-        console.error('Error setting up WebSocket:', error);
+    ws.onclose = (event) => {
+      console.log('WebSocket disconnected:', event.code, event.reason);
+      setIsConnected(false);
+      if (event.code === 4001) {
+        setError('Authentication failed');
+      }
+      
+      // Attempt to reconnect after 5 seconds unless it was an auth error
+      if (event.code !== 4001) {
+        setTimeout(connect, 5000);
       }
     };
 
-    connectWebSocket();
+    ws.onerror = (error) => {
+      console.error('WebSocket error:', error);
+      setError('Connection error');
+    };
+
+    setSocket(ws);
 
     return () => {
-      if (socket?.readyState === WebSocket.OPEN) {
-        socket.close(1000, 'Component unmounting');
+      if (ws) {
+        ws.close();
       }
     };
   }, []);
 
-  return socket;
+  useEffect(() => {
+    const cleanup = connect();
+    return cleanup;
+  }, [connect]);
+
+  return { socket, isConnected, error };
 };
 
 const OrderStatus = ({ status }) => {
   const getStatusColor = (status) => {
     switch (status?.toLowerCase()) {
-      case 'placed':
+      case 'received':
         return 'bg-blue-100 text-blue-800';
-      case 'accepted':
-        return 'bg-purple-100 text-purple-800';
-      case 'food ready':
+      case 'being baked':
         return 'bg-yellow-100 text-yellow-800';
       case 'dispatched':
         return 'bg-orange-100 text-orange-800';
-      case 'done':
+      case 'delivered':
         return 'bg-green-100 text-green-800';
       default:
         return 'bg-gray-100 text-gray-800';
@@ -96,6 +82,36 @@ const OrderStatus = ({ status }) => {
     <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(status)}`}>
       {status}
     </span>
+  );
+};
+
+const OrderStatusProgress = ({ status }) => {
+  const statuses = ['received', 'being baked', 'dispatched', 'delivered'];
+  const currentIndex = statuses.indexOf(status?.toLowerCase());
+
+  return (
+    <div className="w-full mt-4">
+      <div className="flex justify-between mb-2">
+        {statuses.map((s, index) => (
+          <div
+            key={s}
+            className={`text-sm ${
+              index <= currentIndex ? 'text-purple-600' : 'text-gray-400'
+            }`}
+          >
+            {s}
+          </div>
+        ))}
+      </div>
+      <div className="relative pt-1">
+        <div className="overflow-hidden h-2 mb-4 text-xs flex rounded bg-purple-100">
+          <div
+            style={{ width: `${(currentIndex + 1) * (100 / statuses.length)}%` }}
+            className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-purple-500 transition-all duration-500"
+          ></div>
+        </div>
+      </div>
+    </div>
   );
 };
 
@@ -118,6 +134,7 @@ const OrderCard = ({ order, onViewDetails }) => (
           </button>
         </div>
       </div>
+      <OrderStatusProgress status={order.status} />
     </CardContent>
   </Card>
 );
@@ -137,6 +154,8 @@ const OrderDetails = ({ order, onBack }) => (
           <OrderStatus status={order.status} />
         </div>
         
+        <OrderStatusProgress status={order.status} />
+
         <div className="flex justify-between">
           <span className="text-gray-600">Order Date</span>
           <span>{new Date(order.order_date).toLocaleString()}</span>
@@ -177,7 +196,7 @@ const OrdersPage = () => {
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const socket = useOrderSocket();
+  const { socket, isConnected, error: socketError } = useOrderSocket();
 
   const checkAuth = useCallback(() => {
     const token = localStorage.getItem('access_token');
@@ -267,10 +286,10 @@ const OrdersPage = () => {
     );
   }
 
-  if (error) {
+  if (error || socketError) {
     return (
       <div className="p-4 text-center">
-        <p className="text-red-500">Error: {error}</p>
+        <p className="text-red-500">Error: {error || socketError}</p>
         <button 
           onClick={fetchOrders}
           className="mt-4 px-4 py-2 bg-purple-500 text-white rounded hover:bg-purple-600"
@@ -309,6 +328,17 @@ const OrdersPage = () => {
       )}
     </div>
   );
+};
+
+export const getServerSideProps = async ({ locale }) => {
+  if (!locale) {
+    locale = 'en';
+  }
+  return {
+    props: {
+      ...(await serverSideTranslations(locale, ['common'])),
+    },
+  };
 };
 
 export default OrdersPage;

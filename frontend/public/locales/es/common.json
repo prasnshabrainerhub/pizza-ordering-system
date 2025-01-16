@@ -1,0 +1,70 @@
+{
+  "header": {
+    "cart": "Carrito",
+    "logout": "Cerrar sesión",
+    "login": "Iniciar sesión"
+  },
+  "cart": {
+    "empty": "Tu carrito está vacío",
+    "addPizzas": "¡Añade algunas deliciosas pizzas a tu carrito!",
+    "startOrdering": "Comienza a ordenar",
+    "back": "Volver",
+    "subTotal": "Subtotal",
+    "discounts": "Descuentos",
+    "gst": "IVA",
+    "roundOff": "Redondear",
+    "totalToPay": "Total a pagar",
+    "specialInstructions": "Menciona tus instrucciones especiales aquí...",
+    "checkout": "¡PAGAR!"
+  },
+  "checkout": {
+    "securePayment": "Opciones de pago seguro",
+    "toPay": "A pagar",
+    "cashOnDelivery": "Pago contra reembolso",
+    "online": "En línea",
+    "processing": "Procesando..."
+  },
+  "dashboard": {
+  "admin": {
+    "backButton": "← Volver",
+    "manageOrders": "Gestionar Pedidos",
+    "managePizzas": "Gestionar Pizzas",
+    "manageCoupons": "Gestionar Cupones",
+    "manageToppings": "Gestionar Ingredientes"
+  },
+  "pizzas": {
+    "categories": {
+      "category1": "Categoría de Pizza 1",
+      "category2": "Categoría de Pizza 2",
+      "category3": "Categoría de Pizza 3",
+      "category4": "Categoría de Pizza 4",
+      "category5": "Categoría de Pizza 5"
+    },
+    "classic": {
+      "name": "Margherita Clásica",
+      "description": "Tomates frescos, mozzarella y albahaca."
+    },
+    "pepperoni": {
+      "name": "Festín de Pepperoni",
+      "description": "Cargada con pepperoni y queso."
+    },
+    "veggie": {
+      "name": "Suprema Vegetariana",
+      "description": "Cubierta con vegetales frescos."
+    },
+    "hawaiian": {
+      "name": "Paraíso Hawaiano",
+      "description": "Cubierta con jamón, piña y queso."
+    },
+    "meatLovers": {
+      "name": "Amantes de la Carne",
+      "description": "Cargada con pepperoni, salchicha y tocino."
+    }
+  },
+  "sizes": {
+    "small": "Pequeña",
+    "medium": "Mediana",
+    "large": "Grande"
+  }
+}
+}

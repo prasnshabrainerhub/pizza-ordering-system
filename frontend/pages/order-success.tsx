@@ -3,8 +3,12 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { CheckCircle, AlertCircle } from 'lucide-react';
 import { Header } from '@/components/Header';
+import { useTranslation } from 'next-i18next';
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+
 
 const OrderSuccessPage = () => {
+  const { t } = useTranslation('common');
   const router = useRouter();
   const [orderDetails, setOrderDetails] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -179,6 +183,17 @@ const OrderSuccessPage = () => {
       </div>
     </div>
   );
+};
+
+export const getServerSideProps = async ({ locale }) => {
+  if (!locale) {
+    locale = 'en';
+  }
+  return {
+    props: {
+      ...(await serverSideTranslations(locale, ['common'])),
+    },
+  };
 };
 
 export default OrderSuccessPage;

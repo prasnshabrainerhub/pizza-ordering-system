@@ -6,8 +6,8 @@ class UserCreate(BaseModel):
     email: EmailStr
     username: str
     password: str
-    phone_number: Optional[str]
-    address: Optional[str]
+    phone_number: Optional[str] = None
+    address: Optional[str] = None
     role: Optional[UserRole] = UserRole.USER
 
 class UserLogin(BaseModel):

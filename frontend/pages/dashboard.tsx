@@ -11,8 +11,11 @@ import { OrderHistory } from '../components/admin/OrderHistory';
 import { CouponManagement } from '../components/admin/CreateCouponForm';
 import { ToppingManagement } from '../components/admin/CreateToppings';
 import { PIZZA_CATEGORIES } from '../types/types';
+import { useTranslation } from 'react-i18next';
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 
 const Dashboard: React.FC = () => {
+  const { t } = useTranslation();
   const [pizzas, setPizzas] = useState<Pizza[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
@@ -371,6 +374,18 @@ const Dashboard: React.FC = () => {
     </div>
   </div>
   );
+};
+
+
+export const getServerSideProps = async ({ locale }) => {
+  if (!locale) {
+    locale = 'en';
+  }
+  return {
+    props: {
+      ...(await serverSideTranslations(locale, ['common'])),
+    },
+  };
 };
 
 export default Dashboard;

@@ -4,8 +4,12 @@ import { ArrowLeft, Check } from 'lucide-react';
 import { useCart } from '../components/CartContext';
 import { useState, useEffect } from 'react';
 import { jwtDecode } from "jwt-decode";
+import { useTranslation } from 'next-i18next';
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+
 
 const Checkout = () => {
+  const { t } = useTranslation('common');
   const router = useRouter();
   const { items, clearCart } = useCart();
   const [isLoading, setIsLoading] = useState(false);
@@ -165,6 +169,17 @@ const Checkout = () => {
       </main>
     </div>
   );
+};
+
+export const getServerSideProps = async ({ locale }) => {
+  if (!locale) {
+    locale = 'en';
+  }
+  return {
+    props: {
+      ...(await serverSideTranslations(locale, ['common'])),
+    },
+  };
 };
 
 export default Checkout;

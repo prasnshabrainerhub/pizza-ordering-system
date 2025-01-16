@@ -82,13 +82,4 @@ def create_order(
         raise HTTPException(
             status_code=500,
             detail=str(e)
-        )   
-
-@router.put("/orders/{order_id}/status")
-async def update_order_status(
-    order_id: str,
-    status: str,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_db)
-):
-    return await OrderService.update_order_status(db, order_id, status)
+        )

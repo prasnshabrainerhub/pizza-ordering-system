@@ -14,6 +14,24 @@ interface ApiError {
   errors?: Record<string, string[]>;
 }
 
+// Add interface for user data to be stored
+interface UserData {
+  email: string;
+  username: string;
+  phone_number: string;
+  address: string;
+  role: string;
+}
+
+// Add utility functions for localStorage management
+const storeUserData = (userData: UserData) => {
+  localStorage.setItem('userData', JSON.stringify(userData));
+};
+
+export const clearUserData = () => {
+  localStorage.removeItem('userData');
+};
+
 export const SignUpModal: React.FC<SignUpModalProps> = ({ isOpen, onClose }) => {
   const { t } = useTranslation();
   const [formData, setFormData] = useState({
@@ -42,6 +60,15 @@ export const SignUpModal: React.FC<SignUpModalProps> = ({ isOpen, onClose }) => 
   
     try {
       const response = await authApi.register(formData);
+      // Store user data in localStorage after successful registration
+      const userDataToStore: UserData = {
+        email: formData.email,
+        username: formData.username,
+        phone_number: formData.phone_number,
+        address: formData.address,
+        role: formData.role,
+      };
+      storeUserData(userDataToStore);
       onClose();
     } catch (err) {
       console.error('Detailed error in handleSubmit:', err);

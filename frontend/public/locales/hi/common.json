@@ -1,0 +1,70 @@
+{
+    "header": {
+      "cart": "कार्ट",
+      "logout": "लॉग आउट",
+      "login": "लॉग इन"
+    },
+    "cart": {
+      "empty": "आपकी कार्ट खाली है",
+      "addPizzas": "अपनी कार्ट में कुछ स्वादिष्ट पिज्जा जोड़ें!",
+      "startOrdering": "ऑर्डर करना शुरू करें",
+      "back": "वापस",
+      "subTotal": "उपकुल",
+      "discounts": "छूट",
+      "gst": "GST",
+      "roundOff": "राउंड ऑफ",
+      "totalToPay": "कुल भुगतान",
+      "specialInstructions": "यहां अपनी विशेष निर्देश लिखें...",
+      "checkout": "चेकआउट करें!"
+    },
+    "checkout": {
+      "securePayment": "सुरक्षित भुगतान विकल्प",
+      "toPay": "भुगतान करने के लिए",
+      "cashOnDelivery": "कैश ऑन डिलीवरी",
+      "online": "ऑनलाइन",
+      "processing": "प्रसंस्करण हो रहा है..."
+    },
+    "dashboard": {
+  "admin": {
+    "backButton": "← वापस",
+    "manageOrders": "ऑर्डर प्रबंधित करें",
+    "managePizzas": "पिज़्ज़ा प्रबंधित करें",
+    "manageCoupons": "कूपन प्रबंधित करें",
+    "manageToppings": "टॉपिंग्स प्रबंधित करें"
+  },
+  "pizzas": {
+    "categories": {
+      "category1": "पिज़्ज़ा श्रेणी 1",
+      "category2": "पिज़्ज़ा श्रेणी 2",
+      "category3": "पिज़्ज़ा श्रेणी 3",
+      "category4": "पिज़्ज़ा श्रेणी 4",
+      "category5": "पिज़्ज़ा श्रेणी 5"
+    },
+    "classic": {
+      "name": "क्लासिक मार्गरीटा",
+      "description": "ताजा टमाटर, मोज़रेला, और तुलसी।"
+    },
+    "pepperoni": {
+      "name": "पेपरोनी फीस्ट",
+      "description": "पेपरोनी और चीज़ से भरपूर।"
+    },
+    "veggie": {
+      "name": "वेजी सुप्रीम",
+      "description": "ताजी सब्जियों से सजी।"
+    },
+    "hawaiian": {
+      "name": "हवाईयन पैराडाइज",
+      "description": "हैम, अनानास और चीज़ से सजी।"
+    },
+    "meatLovers": {
+      "name": "मीट लवर्स",
+      "description": "पेपरोनी, सॉसेज और बेकन से भरपूर।"
+    }
+  },
+  "sizes": {
+    "small": "छोटा",
+    "medium": "मध्यम",
+    "large": "बड़ा"
+  }
+}
+  }

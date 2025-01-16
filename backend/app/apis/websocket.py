@@ -1,53 +1,78 @@
-from fastapi import APIRouter, WebSocket, WebSocketDisconnect
-from app.services.websocket_manager import manager
-from app.core.security import get_current_user_ws
-import jwt
+# Backend (FastAPI) - websocket.py
+from fastapi import APIRouter, WebSocket, HTTPException, Query, WebSocketDisconnect
+from typing import List, Dict
+import asyncio
+import json
+from datetime import datetime
+from jwt import decode, InvalidTokenError
 
 router = APIRouter()
 
-import logging
+# Store active WebSocket connections
+active_connections: List[WebSocket] = []
 
-# Set up logging
-logging.basicConfig(level=logging.DEBUG)
-logger = logging.getLogger(__name__)
+# Store order statuses
+order_statuses = {
+    0: "received",
+    1: "being baked",
+    2: "dispatched",
+    3: "delivered"
+}
 
-@router.websocket("/ws/orders")
-async def websocket_endpoint(websocket: WebSocket):
-    logger.debug("=== WebSocket Connection Attempt ===")
-    logger.debug(f"Headers: {websocket.headers}")
-    logger.debug(f"Query params: {websocket.query_params}")
-    
-    token = websocket.query_params.get("token")
-    if not token:
-        logger.error("No token in query params")
-        return
-        
-    logger.debug("About to accept connection")
+async def verify_token(token: str) -> bool:
     try:
-        # Accept connection BEFORE token verification
-        await websocket.accept()
-        logger.debug("Connection accepted")
-        
-        # Now verify the token
-        user_id = await get_current_user_ws(token)
-        logger.debug(f"User authentication result: {user_id}")
-        
-        if not user_id:
-            logger.error("Authentication failed")
-            await websocket.close(code=4003)
-            return
-            
-        logger.debug(f"Authenticated user: {user_id}")
-        await manager.connect(websocket, str(user_id))
-        
-        # Keep connection alive
-        while True:
-            data = await websocket.receive_text()
-            logger.debug(f"Received: {data}")
-            
-    except Exception as e:
-        logger.error(f"WebSocket error: {str(e)}", exc_info=True)
+        # Use the same JWT_SECRET from your auth configuration
+        JWT_SECRET = "your-secret-key"  # Move this to environment variables in production
+        decode(token, JWT_SECRET, algorithms=["HS256"])
+        return True
+    except InvalidTokenError:
+        return False
+
+async def broadcast_status_update(status_data: dict):
+    """Broadcast status update to all connected clients"""
+    for connection in active_connections:
         try:
-            await websocket.close(code=4000)
+            await connection.send_json(status_data)
         except:
             pass
+
+async def update_order_status(order_id: str):
+    """Automatically update order status every minute"""
+    current_status = 0
+    
+    while current_status < len(order_statuses):
+        status_data = {
+            "order_id": order_id,
+            "status": order_statuses[current_status],
+            "update_time": datetime.now().isoformat()
+        }
+        
+        await broadcast_status_update(status_data)
+        await asyncio.sleep(60)
+        current_status += 1
+
+@router.websocket("/ws/orders")
+async def websocket_endpoint(
+    websocket: WebSocket,
+    token: str = Query(...)  # Required query parameter
+):
+    if not await verify_token(token):
+        await websocket.close(code=4001, reason="Invalid token")
+        return
+
+    await websocket.accept()
+    active_connections.append(websocket)
+    
+    try:
+        while True:
+            await websocket.receive_text()
+    except WebSocketDisconnect:
+        active_connections.remove(websocket)
+    except Exception:
+        if websocket in active_connections:
+            active_connections.remove(websocket)
+
+@router.post("/api/orders/{order_id}/start-tracking")
+async def start_order_tracking(order_id: str):
+    asyncio.create_task(update_order_status(order_id))
+    return {"message": "Order tracking started"}
