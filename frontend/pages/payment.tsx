@@ -1,31 +1,38 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useRouter } from 'next/router';
 import { X } from 'lucide-react';
 import { useCart } from '../components/CartContext';
-import { jwtDecode } from "jwt-decode";
+import { jwtDecode, JwtPayload } from "jwt-decode";
+import Image from 'next/image';
+import { useTranslation } from 'next-i18next'; 
+
+interface CustomJwtPayload extends JwtPayload {
+  delivery_address?: string;
+  contact_number?: string;
+}
 
 const Payment = () => {
+  const { t } = useTranslation();
   const router = useRouter();
   const { items, clearCart } = useCart();
-  const [isLoading, setIsLoading] = useState(false);
   const [loading, setLoading] = useState(false);
   const amount = router.query.amount || '662.00';
 
   const getUserDetailsFromToken = () => {
-    const token = localStorage.getItem('access_token');
-    if (!token) return null;
+      const token = localStorage.getItem('access_token');
+      if (!token) return null;
     
-    try {
-      const decoded = jwtDecode(token);
-      return {
-        address: decoded.delivery_address || '',
-        phone: decoded.contact_number || '',
-      };
-    } catch (error) {
-      console.error('Error decoding token:', error);
-      return null;
-    }
-  };
+      try {
+        const decoded = jwtDecode<CustomJwtPayload>(token);
+        return {
+          address: decoded.delivery_address || '',
+          phone: decoded.contact_number || '',
+        };
+      } catch (error) {
+        console.error('Error decoding token:', error);
+        return null;
+      }
+    };
 
   const handleClose = () => {
     router.push('/checkout');
@@ -38,10 +45,10 @@ const Payment = () => {
     return Math.round(subtotal + gst + roundOff);
   };
 
-  const createPaymentLink = async (paymentType) => {
+  const createPaymentLink = async (paymentType: string) => {
     setLoading(true);
     try {
-      setIsLoading(true);
+      setLoading(true);
       const token = localStorage.getItem('access_token');
       const userDetails = getUserDetailsFromToken();
 
@@ -92,24 +99,15 @@ const Payment = () => {
       }
     } catch (error) {
       console.error('Error:', error);
-      alert(error.message || 'Failed to create payment link');
+      if (error instanceof Error) {
+        alert(error.message || 'Failed to create payment link');
+      } else {
+        alert('An unexpected error occurred');
+      }
     } finally {
       setLoading(false);
     }
-};
-
-// In your payment success page component
-useEffect(() => {
-  const pendingOrderDetails = localStorage.getItem('pendingOrderDetails');
-  if (pendingOrderDetails) {
-    // Apply the order details to your page
-    const orderData = JSON.parse(pendingOrderDetails);
-    // Update your UI with orderData
-    
-    // Clear the stored details
-    localStorage.removeItem('pendingOrderDetails');
-  }
-}, []);
+  };
 
   const paymentOptions = [
     { 
@@ -145,12 +143,12 @@ useEffect(() => {
         {/* Left Side - Purple Section */}
         <div className="w-1/2 bg-[#7E3AF2] p-8 relative">
           <div className="bg-white/10 rounded-lg p-4 mb-6">
-            <img 
+            <Image 
               src="/api/placeholder/32/32"
               alt="Merchant Logo" 
               className="w-8 h-8 mb-2"
             />
-            <h1 className="text-white text-2xl font-medium mb-2">Pizza Bliss</h1>
+            <h1 className="text-white text-2xl font-medium mb-2">{t('Pizza Bliss')}</h1>
             <p className="text-white text-3xl font-medium">₹ {amount}</p>
           </div>
           
@@ -159,7 +157,7 @@ useEffect(() => {
               className="w-full bg-white/10 text-white px-4 py-3 rounded-lg hover:bg-white/20 transition-colors border border-white/20"
             >
               <div className="flex justify-between items-center">
-                <span>Special Offers</span>
+                <span>{t('Special Offers')}</span>
                 <span>→</span>
               </div>
             </button>
@@ -167,7 +165,7 @@ useEffect(() => {
               className="w-full bg-white/10 text-white px-4 py-3 rounded-lg hover:bg-white/20 transition-colors border border-white/20"
             >
               <div className="flex justify-between items-center">
-                <span>Loyalty Points</span>
+                <span>{t('Loyalty Points')}</span>
                 <span>→</span>
               </div>
             </button>
@@ -181,7 +179,7 @@ useEffect(() => {
           </button>
 
           <div className="absolute bottom-8 left-8 bg-white/5 rounded-lg p-4">
-            <img 
+            <Image 
               src="/api/placeholder/120/30"
               alt="Secured by Stripe Payments" 
               className="opacity-60"
@@ -193,13 +191,13 @@ useEffect(() => {
         <div className="w-1/2 p-8 bg-gray-50">
           {/* Pongal Banner */}
           <div className="bg-[#FEF7E6] p-4 rounded-lg flex items-center justify-between mb-6 border border-[#977B42]/20">
-            <img src="/kite.png" alt="Kite" className="h-6" />
-            <span className="text-[#977B42] font-medium">Happy Pongal!</span>
-            <img src="/palmtree.png" alt="Palm Trees" className="h-6" />
+            <Image src="/kite.png" alt="Kite" className="h-6" />
+            <span className="text-[#977B42] font-medium">{t('Happy Pongal!')}</span>
+            <Image src="/palmtree.png" alt="Palm Trees" className="h-6" />
           </div>
 
           <div className="mb-8">
-            <h2 className="text-sm font-medium text-gray-700 mb-4">Quick Pay</h2>
+            <h2 className="text-sm font-medium text-gray-700 mb-4">{t('Quick Pay')}</h2>
             <div className="bg-white p-6 rounded-lg text-center shadow-sm border border-gray-100">
               <button 
                 onClick={() => createPaymentLink('upi')}
@@ -209,18 +207,18 @@ useEffect(() => {
                 {loading ? 'Processing...' : 'Pay Now'}
               </button>
               <p className="text-sm text-gray-600 mt-4">
-                Supports all payment methods
+                {t('Supports all payment methods')}
                 <div className="flex justify-center gap-4 mt-4">
-                  <img src="/gpay.png" alt="GPay" className="h-8 p-1 bg-gray-50 rounded-lg" />
-                  <img src="/paytm.png" alt="PhonePe" className="h-8 p-1 bg-gray-50 rounded-lg" />
-                  <img src="/phonepe.png" alt="Paytm" className="h-8 p-1 bg-gray-50 rounded-lg" />
+                  <Image src="/gpay.png" alt="GPay" className="h-8 p-1 bg-gray-50 rounded-lg" />
+                  <Image src="/paytm.png" alt="PhonePe" className="h-8 p-1 bg-gray-50 rounded-lg" />
+                  <Image src="/phonepe.png" alt="Paytm" className="h-8 p-1 bg-gray-50 rounded-lg" />
                 </div>
               </p>
             </div>
           </div>
 
           <div>
-            <h2 className="text-sm font-medium text-gray-700 mb-4">All Payment Options</h2>
+            <h2 className="text-sm font-medium text-gray-700 mb-4">{t('All Payment Options')}</h2>
             <div className="space-y-3 text-gray-600">
               {paymentOptions.map((option) => (
                 <button

@@ -168,8 +168,32 @@
   "You can choose up to 1 option(s)": "You can choose up to 1 option(s)",
   "Extra Toppings": "Extra Toppings",
   "You can choose multiple toppings": "You can choose multiple toppings",
-  "Terms and Conditions": "Terms and Conditions"
-
+  "Terms and Conditions": "Terms and Conditions",
+  "Error Loading Order": "Error Loading Order",
+  "Order Not Found": "Order Not Found",
+  "Return to Home" : "Return to Home",
+  "Try Again" : "Try Again",
+  "Thank you for ordering with Pizza Bliss": "Thank you for ordering with Pizza Bliss",
+  "Order Sucessful": "Order Sucessful",
+  "Order Status": "Order Ststus",
+  "Order Details": "Order Details",
+  " Items Total": "Items Total",
+  "Delivery Fee": "Delivery Fee",
+  "Total": "Total",
+  "Delivery Information": "Delivery Information",
+  "Contact Number": "Contact Number",
+  "Estimated delivery time: 30-45 minutes": "Estimated delivery time: 30-45 minutes",
+  "You will receive updates about your order via email": "You will receive updates about your order via email",
+  "Back to Home": "Back to Home",
+  "View All Orders": "View All Orders",
+  "Retry": "Retry",
+  "No orders found": "No orders found",
+  "Special Offers": "Special Offers",
+  "Loyalty Points": "Loyalty Points",
+  "Happy Pongal!": "Happy Pongal!",
+  "Quick Pay": "Quick Pay",
+  "Supports all payment methods": "Supports all payment methods",
+  "All Payment Options": "All Payment Options"
 }
 
 

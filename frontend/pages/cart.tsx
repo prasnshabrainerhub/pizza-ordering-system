@@ -6,16 +6,15 @@ import Link from 'next/link';
 import { Header } from '../components/Header';
 import CartPromotions from "../components/CartPromotions";
 import { useTranslation } from 'next-i18next';
-import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
-
-
+// import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+import { Coupon, DiscountType } from '../types/types';
 
 const Cart = () => {
   const { t } = useTranslation('common');
   const { items, removeFromCart, updateQuantity } = useCart();
-  const [coupons, setCoupons] = useState([]);
+  const [coupons, setCoupons] = useState<Coupon[]>([]);
   const [loadingCoupons, setLoadingCoupons] = useState(true);
-  const [appliedCoupon, setAppliedCoupon] = useState(null);
+  const [appliedCoupon, setAppliedCoupon] = useState<Coupon | null>(null);
   const [error, setError] = useState('');
 
   useEffect(() => {
@@ -32,8 +31,8 @@ const Cart = () => {
           throw new Error('Failed to fetch coupons');
         }
         
-        const data = await response.json();
-        const activeCoupons = data.filter((coupon) => {
+        const data: Coupon[] = await response.json();
+        const activeCoupons = data.filter((coupon: Coupon) => {
           const now = new Date();
           const validFrom = new Date(coupon.valid_from);
           const validUntil = new Date(coupon.valid_until);
@@ -57,10 +56,8 @@ const Cart = () => {
 
   const calculateDiscount = () => {
     if (!appliedCoupon) return 0;
-
     const subtotal = calculateSubTotal();
-
-    // Check minimum order value
+    
     if (subtotal < appliedCoupon.min_order_value) {
       setError(`Minimum order value of ₹${appliedCoupon.min_order_value} required`);
       setAppliedCoupon(null);
@@ -68,31 +65,26 @@ const Cart = () => {
     }
 
     let discount = 0;
-    if (appliedCoupon.discount_type === 'PERCENTAGE') {
+    if (appliedCoupon.discount_type === DiscountType.PERCENTAGE) {
       discount = (subtotal * appliedCoupon.discount_value) / 100;
-      // Apply maximum discount limit for percentage discounts
       if (appliedCoupon.max_discount && discount > appliedCoupon.max_discount) {
         discount = appliedCoupon.max_discount;
       }
     } else {
-      // Fixed amount discount
       discount = appliedCoupon.discount_value;
     }
-
-    // Ensure discount doesn't exceed the subtotal
+    
     return Math.min(discount, subtotal);
   };
 
-  const handleApplyCoupon = (coupon) => {
+  const handleApplyCoupon = (coupon: Coupon) => {
     setError('');
     
-    // Validate usage limit
-    if (coupon.usage_limit !== null && coupon.times_used >= coupon.usage_limit) {
+    if (coupon.usage_limit && coupon.times_used >= coupon.usage_limit) {
       setError('This coupon has reached its usage limit');
       return;
     }
 
-    // Validate minimum order value
     if (calculateSubTotal() < coupon.min_order_value) {
       setError(`Minimum order value of ₹${coupon.min_order_value} required`);
       return;
@@ -113,6 +105,7 @@ const Cart = () => {
   const calculateTotal = () => {
     return Math.round(calculateSubTotal() - calculateDiscount() + calculateGST() + calculateRoundOff());
   };
+
 
 
   if (items.length === 0) {
@@ -286,17 +279,6 @@ const Cart = () => {
       </div>
     </div>
   );
-};
-
-export const getServerSideProps = async ({ locale }) => {
-  if (!locale) {
-    locale = ['en', 'es', 'hi'];
-  }
-  return {
-    props: {
-      ...(await serverSideTranslations(locale, ['common'])),
-    },
-  };
 };
 
 export default Cart;

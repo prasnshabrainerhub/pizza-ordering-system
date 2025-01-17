@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, Form, File, UploadFile
+from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 from app.core.config import settings
 from app.models.models import UserRole, PizzaCategory
@@ -11,7 +12,6 @@ import jwt
 import uuid
 import json
 import os
-from fastapi.responses import JSONResponse
 
 router = APIRouter()
 
@@ -149,5 +149,5 @@ def delete_pizza(
         PizzaService.delete_pizza(db, pizza_id)
         return {"message": "Pizza deleted successfully"}
         
-    except jwt.JWTError:
+    except jwt.PyJWTError:
         raise HTTPException(status_code=401, detail="Invalid token")

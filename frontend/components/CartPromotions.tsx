@@ -2,27 +2,18 @@ import { useTranslation } from 'react-i18next';
 import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Loader2 } from 'lucide-react';
-
-interface Coupon {
-  coupon_id: string;
-  code: string;
-  description: string;
-  discount_type: 'PERCENTAGE' | 'FIXED';
-  discount_value: number;
-  valid_from: string;
-  valid_until: string;
-}
+import { Coupon, DiscountType } from '../types/types';
 
 interface CartPromotionsProps {
-  coupons: Coupon[];
+  coupons: Array<Coupon>;
   onApplyCoupon: (coupon: Coupon) => void;
-  loading?: boolean;
+  loading: boolean;
 }
 
 const CartPromotions: React.FC<CartPromotionsProps> = ({ coupons, onApplyCoupon, loading = false }) => {
   const { t } = useTranslation();
   const [showAllCoupons, setShowAllCoupons] = useState(false);
-  
+
   if (loading) {
     return (
       <div className="bg-white rounded-lg shadow p-6 flex items-center justify-center">
@@ -40,27 +31,26 @@ const CartPromotions: React.FC<CartPromotionsProps> = ({ coupons, onApplyCoupon,
   }
 
   const mainCoupon = coupons[0];
-  
   return (
     <>
       <div className="bg-white rounded-lg shadow p-6">
         <div className="flex items-center gap-2 mb-4">
           <span className="p-1 bg-black text-white rounded">%</span>
           <span className="font-medium">
-            {mainCoupon.description || (mainCoupon.discount_type === 'PERCENTAGE'
+            {mainCoupon.description || (mainCoupon.discount_type === DiscountType.PERCENTAGE
               ? `${mainCoupon.discount_value}% off`
               : `₹${mainCoupon.discount_value} off`)}
           </span>
         </div>
         <p className="text-sm text-gray-600">{t('Code:')} {mainCoupon.code}</p>
         <div className="flex justify-between mt-4">
-          <button 
+          <button
             onClick={() => onApplyCoupon(mainCoupon)}
             className="text-green-600 font-medium"
           >
             {t('Apply')}
           </button>
-          <button 
+          <button
             onClick={() => setShowAllCoupons(true)}
             className="text-green-600 font-medium"
           >
@@ -84,7 +74,7 @@ const CartPromotions: React.FC<CartPromotionsProps> = ({ coupons, onApplyCoupon,
                   {coupon.code}
                 </div>
                 <p className="font-semibold">
-                  {coupon.description || (coupon.discount_type === 'PERCENTAGE'
+                  {coupon.description || (coupon.discount_type === DiscountType.PERCENTAGE
                     ? `${coupon.discount_value}% off`
                     : `₹${coupon.discount_value} off`)}
                 </p>

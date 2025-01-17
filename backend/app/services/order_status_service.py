@@ -45,7 +45,7 @@ class OrderStatusService:
                             break
                         
                         current_status_idx += 1
-                        time.sleep(5)
+                        time.sleep(15)
                         
                     except Exception as e:
                         print(f"Error updating status: {str(e)}")

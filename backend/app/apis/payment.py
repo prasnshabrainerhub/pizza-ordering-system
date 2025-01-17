@@ -74,15 +74,7 @@ def create_payment_link(
                 'order_id': str(order.order_id)
             }
         )
-        return {
-            "url": payment_link.url,
-            "order_id": str(order.order_id),
-            "items_total": float(request.amount - 40),  # Assuming 40 is delivery fee
-            "delivery_fee": 40.0,
-            "total_amount": float(request.amount),
-            "delivery_address": order.delivery_address,
-            "contact_number": order.contact_number,
-        }
+        return {"url": payment_link.url}
     except stripe.error.StripeError as e:
         raise HTTPException(status_code=400, detail=str(e.user_message))
     except Exception as e:

@@ -7,6 +7,7 @@ from app.services.order_status_service import OrderStatusService
 from app.schema.order import OrderCreate
 from app.services.notification_service import notify_user
 from app.core.database import get_db
+import datetime
 
 class OrderService:
     @staticmethod
@@ -32,6 +33,8 @@ class OrderService:
                 delivery_address=order.delivery_address,
                 contact_number=order.contact_number,
                 status=OrderStatus.RECEIVED,
+                created_at=datetime.datetime.now(datetime.timezone.utc),
+                updated_at=datetime.datetime.now(datetime.timezone.utc)
             )
             db.add(db_order)
             db.flush()  # Flush to get the order_id
@@ -54,9 +57,9 @@ class OrderService:
             # Notify user if email exists
             user = db.query(User).filter(User.user_id == user_id).first()
             if user and user.email:
-                notify_user(email=user.email, phone_number=user.phone_number)
+                notify_user(email=user.email, phone_number=user.phone_number, order_id=db_order.order_id)
 
-            OrderStatus.start_status_updates(db, db_order.order_id)
+            OrderStatusService.start_status_updates(db, db_order.order_id)
 
             return db_order
 

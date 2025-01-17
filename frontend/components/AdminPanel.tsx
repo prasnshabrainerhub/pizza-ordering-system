@@ -1,5 +1,4 @@
 import { useTranslation } from 'react-i18next';
-import React, { useState } from 'react';
 import { Pizza, History, Sandwich, Tag } from 'lucide-react';
 
 interface AdminPanelProps {

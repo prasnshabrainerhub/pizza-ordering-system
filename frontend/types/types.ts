@@ -37,13 +37,14 @@ export interface Coupon {
   code: string;
   discount_type: DiscountType;
   discount_value: number;
-  description?: string;
+  description: string;
   valid_from: Date;
   valid_until: Date;
   min_order_value: number;
   max_discount?: number;
   is_active: boolean;
   usage_limit?: number;
+  times_used: number;  // Added this field
 }
 
 export type MenuItem = {

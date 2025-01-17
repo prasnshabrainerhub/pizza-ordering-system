@@ -1,12 +1,11 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
+from uuid import UUID
 from app.core.database import get_db
 from app.models.models import Coupon, CouponUsage
 from app.schema.coupon import CouponCreate, CouponResponse
 from app.core.security import JWTBearer
 from app.core.config import settings
-from uuid import UUID
-from datetime import datetime
 from app.models.models import UserRole
 import jwt
 

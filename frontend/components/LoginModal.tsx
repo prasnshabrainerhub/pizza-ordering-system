@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { X } from 'lucide-react';
 import { SignUpModal } from './SignUpModel';
-import { authApi, storeTokens } from '../utils/auth';
+import { authApi } from '../utils/auth';
 import { useTranslation } from 'react-i18next';
 
 interface LoginModalProps {

@@ -3,7 +3,6 @@ import { Header } from '../components/Header';
 import { Sidebar } from '../components/Sidebar';
 import { Promotions } from '../components/Pramotions';
 import { PizzaCard } from '../components/ui/PizzaCard';
-import { Pizza } from '../types/types';
 import { StoreHeader } from '../components/StoreHeader';
 import { AdminPanel } from '../components/AdminPanel';
 import { PizzaManagement } from '../components/admin/CreatePizzaForm';
@@ -12,12 +11,35 @@ import { CouponManagement } from '../components/admin/CreateCouponForm';
 import { ToppingManagement } from '../components/admin/CreateToppings';
 import { PIZZA_CATEGORIES } from '../types/types';
 import { useTranslation } from 'react-i18next';
-import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+// import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+
+
+enum PizzaSizeEnum {
+  SMALL = 'small',
+  MEDIUM = 'medium',
+  LARGE = 'large',
+}
+
+interface PizzaSize {
+  size: PizzaSizeEnum;
+  price: number;
+}
+
+interface Pizza {
+  pizza_id: string;
+  name: string;
+  description: string;
+  base_price: number;
+  category: string;
+  sizes: PizzaSize[];
+  image_url: string;
+}
+
 
 const Dashboard: React.FC = () => {
   const { t } = useTranslation('common');
   const [pizzas, setPizzas] = useState<Pizza[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  // const [loading, setLoading] = useState<boolean>(true);
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
   const [adminView, setAdminView] = useState<string>('');
 
@@ -47,8 +69,6 @@ const Dashboard: React.FC = () => {
         }
       } catch (error) {
         console.error('Error fetching pizzas:', error);
-      } finally {
-        setLoading(false);
       }
     };
     fetchPizzas();
@@ -109,11 +129,11 @@ const Dashboard: React.FC = () => {
     }
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem('access_token');
-    localStorage.removeItem('refresh_token');
-    window.location.reload();
-  }
+  // const handleLogout = () => {
+  //   localStorage.removeItem('access_token');
+  //   localStorage.removeItem('refresh_token');
+  //   window.location.reload();
+  // }
 
   return (
     <div className="min-h-screen flex flex-col text-black bg-gray-50">
@@ -137,28 +157,27 @@ const Dashboard: React.FC = () => {
 
         {/* Conditional Rendering for Admin Content or Main Dashboard */}
         {adminView ? (
-          <div className="p-6 bg-white shadow-md rounded-lg">
-            {renderAdminContent()}
-          </div>
-        ) : (
-          <>
-            <Promotions />
-            {PIZZA_CATEGORIES.map(category => {
-              const categoryPizzas = pizzas.filter(pizza => pizza.category === category.id);
-              if (categoryPizzas.length === 0) return null;
-              
-              return (
-                <div key={category.id} className="mt-8">
-                  <h2 className="text-xl font-semibold mb-4">
-                    {category.icon} {category.name}
-                  </h2>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {categoryPizzas.map((pizza) => (
-                      //@ts-ignore
-                      <PizzaCard key={pizza.id} pizza={pizza} />
-                    ))}
-                  </div>
+        <div className="p-6 bg-white shadow-md rounded-lg">
+          {renderAdminContent()}
+        </div>
+      ) : (
+        <>
+          <Promotions />
+          {PIZZA_CATEGORIES.map(category => {
+            const categoryPizzas = pizzas.filter(pizza => pizza.category === category.id);
+            if (categoryPizzas.length === 0) return null;
+            
+            return (
+              <div key={category.id} className="mt-8">
+                <h2 className="text-xl font-semibold mb-4">
+                  {category.icon} {category.name}
+                </h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {categoryPizzas.map((pizza) => (
+                    <PizzaCard key={pizza.pizza_id} pizza={pizza} />
+                  ))}
                 </div>
+              </div>
               );
             })}
           </>
@@ -170,15 +189,15 @@ const Dashboard: React.FC = () => {
 };
 
 
-export const getServerSideProps = async ({ locale }) => {
-  if (!locale) {
-    locale = ['en', 'es', 'hi'];
-  }
-  return {
-    props: {
-      ...(await serverSideTranslations(locale ?? 'en', ['common'])),
-    },
-  };
-};
+// export const getServerSideProps = async ({ locale }) => {
+//   if (!locale) {
+//     locale = ['en', 'es', 'hi'];
+//   }
+//   return {
+//     props: {
+//       ...(await serverSideTranslations(locale ?? 'en', ['common'])),
+//     },
+//   };
+// };
 
 export default Dashboard;

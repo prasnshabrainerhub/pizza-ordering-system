@@ -1,6 +1,27 @@
 import { useTranslation } from 'react-i18next';
 import React, { useState, useEffect } from 'react';
-import { Pencil, Trash2 } from 'lucide-react';
+import { Trash2 } from 'lucide-react';
+
+enum PizzaSizeEnum {
+  SMALL = 'small',
+  MEDIUM = 'medium',
+  LARGE = 'large',
+}
+
+interface PizzaSize {
+  size: PizzaSizeEnum;
+  price: number;
+}
+
+interface Pizza {
+  pizza_id: string;
+  name: string;
+  description: string;
+  base_price: number;
+  category: string;
+  sizes: PizzaSize[];
+  image_url: string;
+}
 
 export const ManagePizzas: React.FC = () => {
   const { t } = useTranslation();
@@ -35,7 +56,7 @@ export const ManagePizzas: React.FC = () => {
       });
 
       if (response.ok) {
-        setPizzas(pizzas.filter(pizza => pizza.id !== id));
+        setPizzas(pizzas.filter(pizza => pizza.pizza_id !== id));
         alert('Pizza deleted successfully!');
       }
     } catch (error) {
@@ -59,13 +80,13 @@ export const ManagePizzas: React.FC = () => {
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
             {pizzas.map((pizza) => (
-              <tr key={pizza.id}>
+              <tr key={pizza.pizza_id}>
                 <td className="px-6 py-4 whitespace-nowrap">{pizza.name}</td>
                 <td className="px-6 py-4 whitespace-nowrap">₹{pizza.price}</td>
                 <td className="px-6 py-4 whitespace-nowrap capitalize">{pizza.category}</td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <button 
-                    onClick={() => handleDelete(pizza.id)}
+                    onClick={() => handleDelete(pizza.pizza_id)}
                     className="text-red-600 hover:text-red-900 mx-2"
                   >
                     <Trash2 size={20} />

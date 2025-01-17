@@ -99,6 +99,7 @@ const OrderDetails = ({ order, onBack }) => (
 );
 
 const OrdersPage = () => {
+  const { t } = useTranslation();
   const router = useRouter();
   const [orders, setOrders] = useState([]);
   const [selectedOrder, setSelectedOrder] = useState(null);
@@ -180,7 +181,7 @@ const OrdersPage = () => {
           onClick={fetchOrders}
           className="mt-4 px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
         >
-          Retry
+          {t('Retry')}
         </button>
       </div>
     );
@@ -195,7 +196,7 @@ const OrdersPage = () => {
         >
           <ArrowLeft className="w-6 h-6" />
         </button>
-        <h1 className="text-xl font-semibold text-black">Orders</h1>
+        <h1 className="text-xl font-semibold text-black">{t('Orders')}</h1>
       </div>
       
       {selectedOrder ? (
@@ -207,7 +208,7 @@ const OrdersPage = () => {
         <div className="space-y-4">
           {orders.length === 0 ? (
             <div className="text-center py-8">
-              <p className="text-black">No orders found</p>
+              <p className="text-black">{t('No orders found')}</p>
             </div>
           ) : (
             orders.map(order => (

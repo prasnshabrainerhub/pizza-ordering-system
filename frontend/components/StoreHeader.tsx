@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import React from 'react';
-import { Store, Phone, Search, MenuIcon } from 'lucide-react';
+import { Store, Phone, Search } from 'lucide-react';
 
 export const StoreHeader = () => {
   const { t } = useTranslation();

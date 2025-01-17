@@ -11,7 +11,14 @@ import {
 } from '@/components/ui/dialog';
 import { Globe } from 'lucide-react';
 
-const languages = [
+// Define types for our language object
+type Language = {
+  code: string;
+  name: string;
+  flag: string;
+};
+
+const languages: Language[] = [
   { code: 'en', name: 'English', flag: '🇬🇧' },
   { code: 'es', name: 'Español', flag: '🇪🇸' },
   { code: 'hi', name: 'हिंदी', flag: '🇮🇳' }
@@ -23,7 +30,8 @@ export const LanguageSwitcher = () => {
   const [open, setOpen] = useState(false);
   const { pathname, asPath, query, locale } = router;
 
-  const changeLanguage = async (newLocale) => {
+  // Add type for newLocale parameter
+  const changeLanguage = async (newLocale: string) => {
     try {
       console.log('Changing language:', {
         from: locale,
@@ -34,7 +42,6 @@ export const LanguageSwitcher = () => {
       
       setOpen(false);
       
-      // Use replace instead of push for smoother transition
       await router.replace(
         { pathname, query },
         asPath,

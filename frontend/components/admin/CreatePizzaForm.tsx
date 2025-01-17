@@ -75,6 +75,7 @@ export const PizzaManagement: React.FC = () => {
             });
             if (response.ok) {
                 const data = await response.json();
+                console.log('Fetched pizzas data:', data); // Add this debug line
                 setPizzas(Array.isArray(data) ? data : []);
             } else {
                 console.error('Error fetching pizzas:', response.status);
@@ -93,16 +94,26 @@ export const PizzaManagement: React.FC = () => {
     const handleEditClick = (pizza: Pizza) => {
         console.log('Editing pizza:', pizza);
         setEditingPizza(pizza);
+        
+        // Default sizes if none exist
+        const defaultSizes = [
+            { size: PizzaSizeEnum.SMALL, price: 0 },
+            { size: PizzaSizeEnum.MEDIUM, price: 0 },
+            { size: PizzaSizeEnum.LARGE, price: 0 },
+        ];
+    
         setFormData({
-            name: pizza.name,
-            description: pizza.description,
-            base_price: pizza.base_price,
-            category: pizza.category,
-            sizes: pizza.sizes,
+            name: pizza.name || '',
+            description: pizza.description || '',
+            base_price: pizza.base_price || 0,
+            category: pizza.category || PIZZA_CATEGORIES[0].id,
+            sizes: Array.isArray(pizza.sizes) && pizza.sizes.length > 0 
+                ? pizza.sizes 
+                : defaultSizes,
             image: null,
         });
         setImagePreview(getImageUrl(pizza.image_url));
-        setIsAddingPizza(true);  // Show the form when editing
+        setIsAddingPizza(true);
     };
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -124,15 +135,46 @@ export const PizzaManagement: React.FC = () => {
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        const token = localStorage.getItem('access_token');
+    e.preventDefault();
+    const token = localStorage.getItem('access_token');
 
-        if (!token) {
-            alert('Please log in again');
-            return;
-        }
+    if (!token) {
+        alert('Please log in again');
+        return;
+    }
 
-        try {
+    try {
+        // If we're editing, send JSON data
+        if (editingPizza) {
+            const jsonData = {
+                name: formData.name,
+                description: formData.description || '',
+                base_price: formData.base_price,
+                category: formData.category,
+                sizes: Array.isArray(formData.sizes) ? formData.sizes : defaultFormData.sizes,
+            };
+
+            console.log('Sending update data:', jsonData);
+
+            const response = await fetch(`http://localhost:8000/api/pizzas/${editingPizza.pizza_id}`, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(jsonData),
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.detail || 'Failed to update pizza');
+            }
+
+            await fetchPizzas();
+            resetForm();
+        } 
+        // For new pizzas, continue using FormData
+        else {
             const formDataToSend = new FormData();
             formDataToSend.append('name', formData.name);
             formDataToSend.append('description', formData.description || '');
@@ -144,31 +186,27 @@ export const PizzaManagement: React.FC = () => {
                 formDataToSend.append('image', formData.image);
             }
 
-            const url = editingPizza 
-                ? `http://localhost:8000/api/pizzas/${editingPizza.pizza_id}`
-                : 'http://localhost:8000/api/pizzas';
-
-            const response = await fetch(url, {
-                method: editingPizza ? 'PUT' : 'POST',
+            const response = await fetch('http://localhost:8000/api/pizzas', {
+                method: 'POST',
                 headers: {
-                    Authorization: `Bearer ${token}`,
+                    'Authorization': `Bearer ${token}`,
                 },
                 body: formDataToSend,
             });
 
             if (!response.ok) {
                 const errorData = await response.json();
-                throw new Error(errorData.detail || 'Failed to save pizza');
+                throw new Error(errorData.detail || 'Failed to create pizza');
             }
 
-            await fetchPizzas();  // Refresh the pizza list
-            resetForm();  // Reset the form after successful submission
-            
-        } catch (error) {
-            console.error('Error saving pizza:', error);
-            alert(error instanceof Error ? error.message : 'Failed to save pizza');
+            await fetchPizzas();
+            resetForm();
         }
-    };
+    } catch (error) {
+        console.error('Error saving pizza:', error);
+        alert(error instanceof Error ? error.message : 'Failed to save pizza');
+    }
+};
 
     const handleDelete = async (pizzaId: string) => {
         if (!confirm('Are you sure you want to delete this pizza?')) return;
@@ -236,7 +274,7 @@ export const PizzaManagement: React.FC = () => {
                             />
                             <div className="flex flex-col items-center">
                                 {imagePreview ? (
-                                    <img 
+                                    <Image 
                                         src={imagePreview} 
                                         alt="Preview" 
                                         className="w-32 h-32 object-cover rounded-lg mb-2" 
@@ -301,7 +339,7 @@ export const PizzaManagement: React.FC = () => {
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">{t('Sizes')}</label>
                             <div className="space-y-2">
-                                {formData.sizes.map((size, index) => (
+                                {(formData.sizes || []).map((size, index) => (
                                     <div key={size.size} className="flex items-center gap-4">
                                         <span className="w-24 capitalize">{size.size}</span>
                                         <input
@@ -312,6 +350,7 @@ export const PizzaManagement: React.FC = () => {
                                             required
                                         />
                                     </div>
+
                                 ))}
                             </div>
                         </div>

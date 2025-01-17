@@ -1,10 +1,30 @@
 import React from 'react';
 import Image from 'next/image';
-import { Pizza } from '../../types/types';
 import {PizzaCustomizeModal} from './PizzaCustomization';
 import { useTranslation } from 'react-i18next';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+
+enum PizzaSizeEnum {
+  SMALL = 'small',
+  MEDIUM = 'medium',
+  LARGE = 'large',
+}
+
+interface PizzaSize {
+  size: PizzaSizeEnum;
+  price: number;
+}
+
+interface Pizza {
+  pizza_id: string;
+  name: string;
+  description: string;
+  base_price: number;
+  category: string;
+  sizes: PizzaSize[];
+  image_url: string;
+}
 
 interface PizzaCardProps {
   pizza: Pizza;

@@ -4,7 +4,6 @@ from app.core.database import get_db
 from app.schema.user import UserCreate, UserLogin, Token
 from app.services.auth_services import AuthService
 from app.core.security import create_access_token, create_refresh_token
-from datetime import datetime, timezone
 
 router = APIRouter()
 

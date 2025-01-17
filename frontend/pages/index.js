@@ -149,7 +149,7 @@ const Home = () => {
         {/* Box 1 */}
         <div className="relative border-2 border-gray-300 rounded-lg p-6 hover:bg-red-600 hover:text-white transition-all duration-300">
           <div className="flex justify-center mb-4">
-            <img
+            <Image
               src="/pizza1.png" // Small pizza image for the box
               alt="Pizza"
               width={150}
@@ -171,7 +171,7 @@ const Home = () => {
         {/* Box 2 */}
         <div className="relative border-2 border-gray-300 rounded-lg p-6 hover:bg-red-600 hover:text-white transition-all duration-300">
           <div className="flex justify-center mb-4">
-            <img
+            <Image
               src="/pizza4.png" // Small pizza image for the box
               alt="Pizza"
               width={150}
@@ -193,7 +193,7 @@ const Home = () => {
         {/* Box 3 */}
         <div className="relative border-2 border-gray-300 rounded-lg p-6 hover:bg-red-600 hover:text-white transition-all duration-300">
           <div className="flex justify-center mb-4">
-            <img
+            <Image
               src="/pizza3.png" // Small pizza image for the box
               alt="Pizza"
               width={150}
@@ -215,7 +215,7 @@ const Home = () => {
         {/* Box 4 */}
         <div className="relative border-2 border-gray-300 rounded-lg p-6 hover:bg-red-600 hover:text-white transition-all duration-300">
           <div className="flex justify-center mb-4">
-            <img
+            <Image
               src="/pizza4.png" // Small pizza image for the box
               alt="Pizza"
               width={150}
@@ -237,7 +237,7 @@ const Home = () => {
         {/* Box 5 */}
         <div className="relative border-2 border-gray-300 rounded-lg p-6 hover:bg-red-600 hover:text-white transition-all duration-300">
           <div className="flex justify-center mb-4">
-            <img
+            <Image
               src="/pizza1.png" // Small pizza image for the box
               alt="Pizza"
               width={150}
@@ -259,7 +259,7 @@ const Home = () => {
         {/* Box 6 */}
         <div className="relative border-2 border-gray-300 rounded-lg p-6 hover:bg-red-600 hover:text-white transition-all duration-300">
           <div className="flex justify-center mb-4">
-            <img
+            <Image
               src="/pizza3.png" // Small pizza image for the box
               alt="Pizza"
               width={150}

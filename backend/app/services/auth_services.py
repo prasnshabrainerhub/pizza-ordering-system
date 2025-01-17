@@ -37,7 +37,7 @@ class AuthService:
             phone_number=user.phone_number,
             address=user.address,
             refresh_token=refresh_token,
-            created_at=datetime.datetime.now(datetime.UTC),  # Updated to use timezone-aware datetime
+            created_at=datetime.datetime.now(datetime.timezone.utc),  # Updated to use timezone-aware datetime
         )
         db.add(db_user)
         db.commit()

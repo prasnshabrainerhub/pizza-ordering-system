@@ -8,13 +8,6 @@ interface SignUpModalProps {
   onClose: () => void;
 }
 
-interface ApiError {
-  detail?: string;
-  message?: string;
-  errors?: Record<string, string[]>;
-}
-
-// Add interface for user data to be stored
 interface UserData {
   email: string;
   username: string;
@@ -23,7 +16,18 @@ interface UserData {
   role: string;
 }
 
-// Add utility functions for localStorage management
+interface ErrorDetail {
+  msg: string;
+}
+
+interface ApiErrorData {
+  detail: ErrorDetail[] | string;
+}
+
+interface ApiError {
+  data: ApiErrorData;
+}
+
 const storeUserData = (userData: UserData) => {
   localStorage.setItem('userData', JSON.stringify(userData));
 };
@@ -60,7 +64,7 @@ export const SignUpModal: React.FC<SignUpModalProps> = ({ isOpen, onClose }) => 
   
     try {
       const response = await authApi.register(formData);
-      // Store user data in localStorage after successful registration
+      console.log(response);
       const userDataToStore: UserData = {
         email: formData.email,
         username: formData.username,
@@ -73,17 +77,23 @@ export const SignUpModal: React.FC<SignUpModalProps> = ({ isOpen, onClose }) => 
     } catch (err) {
       console.error('Detailed error in handleSubmit:', err);
       
-      if (err && typeof err === 'object' && 'data' in err) {
-        const errorData = err.data;
-        //@ts-ignore
-        if (errorData && errorData.detail && Array.isArray(errorData.detail)) {
-          // Handle the array of validation errors
-          //@ts-ignore
-          const errorMessages = errorData.detail.map(error => error.msg).join(', ');
+      // Type guard to check if error matches our ApiError interface
+      const isApiError = (error: unknown): error is ApiError => {
+        return (
+          typeof error === 'object' &&
+          error !== null &&
+          'data' in error &&
+          typeof (error as { data: unknown }).data === 'object' &&
+          'detail' in (error as { data: { detail?: unknown } }).data
+        );
+      };
+
+      if (isApiError(err)) {
+        if (Array.isArray(err.data.detail)) {
+          const errorMessages = err.data.detail.map(error => error.msg).join(', ');
           setError(errorMessages);
         } else {
-          //@ts-ignore
-          setError(errorData.detail || 'Registration failed');
+          setError(err.data.detail || 'Registration failed');
         }
       } else {
         setError('Registration failed. Please try again.');

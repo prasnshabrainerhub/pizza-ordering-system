@@ -2,11 +2,17 @@ import { useRouter } from 'next/router';
 import { Header } from '@/components/Header';
 import { ArrowLeft, Check } from 'lucide-react';
 import { useCart } from '../components/CartContext';
-import { useState, useEffect } from 'react';
-import { jwtDecode } from "jwt-decode";
+import { useState } from 'react';
+import { jwtDecode, JwtPayload } from "jwt-decode";
 import { useTranslation } from 'next-i18next';
-import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+// import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+import Image from 'next/image';
 
+
+interface CustomJwtPayload extends JwtPayload {
+  delivery_address?: string;
+  contact_number?: string;
+}
 
 const Checkout = () => {
   const { t } = useTranslation('common');
@@ -17,9 +23,9 @@ const Checkout = () => {
   const getUserDetailsFromToken = () => {
     const token = localStorage.getItem('access_token');
     if (!token) return null;
-    
+  
     try {
-      const decoded = jwtDecode(token);
+      const decoded = jwtDecode<CustomJwtPayload>(token);
       return {
         address: decoded.delivery_address || '',
         phone: decoded.contact_number || '',
@@ -37,22 +43,22 @@ const Checkout = () => {
     return Math.round(subtotal + gst + roundOff);
   };
 
-  const handlePlaceOrder = async (paymentMethod) => {
+  const handlePlaceOrder = async (paymentMethod: string) => {
     try {
       setIsLoading(true);
       const token = localStorage.getItem('access_token');
       const userDetails = getUserDetailsFromToken();
-
+  
       if (!token || !userDetails) {
         alert('Please login to continue');
         return;
       }
-
+  
       if (paymentMethod === 'ONLINE') {
         router.push(`/payment?amount=${calculateTotal()}`);
         return;
       }
-
+  
       const orderData = {
         order_items: items.map(item => ({
           pizza_id: item.pizzaId,
@@ -67,7 +73,7 @@ const Checkout = () => {
         contact_number: userDetails.phone,
         notes: ""
       };
-
+  
       const response = await fetch('http://localhost:8000/api/orders', {
         method: 'POST',
         headers: {
@@ -76,26 +82,26 @@ const Checkout = () => {
         },
         body: JSON.stringify(orderData),
       });
-
+  
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.detail || 'Failed to place order');
       }
-
+  
       const orderDetails = await response.json();
       clearCart();
       router.push({
         pathname: '/order-success',
         query: { ...orderDetails },
       });
-
+  
     } catch (error) {
       console.error('Error:', error);
-      alert(error.message || 'Failed to place order. Please try again.');
     } finally {
       setIsLoading(false);
     }
   };
+  
 
   // Rest of your JSX remains the same...
   return (
@@ -136,7 +142,7 @@ const Checkout = () => {
               className="bg-white rounded-3xl shadow-md p-12 flex flex-col items-center cursor-pointer transition-all duration-300 hover:bg-purple-200 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <div className="w-32 h-32 mb-6">
-                <img 
+                <Image 
                   src="/cash.png"
                   alt="Cash on Delivery"
                   className="w-full h-full object-contain"
@@ -154,7 +160,7 @@ const Checkout = () => {
               className="bg-white rounded-3xl shadow-md p-12 flex flex-col items-center cursor-pointer transition-all duration-300 hover:bg-purple-200 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <div className="w-32 h-32 mb-6">
-                <img 
+                <Image 
                   src="/onlinepayemnt.png"
                   alt="Online Payment"
                   className="w-full h-full object-contain"
@@ -169,17 +175,6 @@ const Checkout = () => {
       </main>
     </div>
   );
-};
-
-export const getServerSideProps = async ({ locale }) => {
-  if (!locale) {
-    locale = ['en', 'es', 'hi'];
-  }
-  return {
-    props: {
-      ...(await serverSideTranslations(locale, ['common'])),
-    },
-  };
 };
 
 export default Checkout;

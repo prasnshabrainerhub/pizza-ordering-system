@@ -3,7 +3,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import { ShoppingCart, LogIn, MoreVertical, Home, User, Package } from 'lucide-react';
 import { LoginModal } from './LoginModal';
 import { useRouter } from 'next/navigation';
-import { useCart } from '../components/CartContext';
 import { clearUserData } from './SignUpModel';
 import { LanguageSwitcher } from './LanguageSwitcher';
 
@@ -35,7 +34,6 @@ const decodeJWT = (token: string) => {
 export const Header = () => {
   const { t } = useTranslation();
   const router = useRouter();
-  const { state } = useCart();
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isMainDropdownOpen, setIsMainDropdownOpen] = useState(false);
   const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
