@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { X } from 'lucide-react';
 import { useCart } from '../components/CartContext';
@@ -31,6 +31,13 @@ const Payment = () => {
     router.push('/checkout');
   };
 
+  const calculateTotal = () => {
+    const subtotal = items.reduce((total, item) => total + (item.price * item.quantity), 0);
+    const gst = subtotal * 0.05;
+    const roundOff = Math.round(subtotal + gst) - (subtotal + gst);
+    return Math.round(subtotal + gst + roundOff);
+  };
+
   const createPaymentLink = async (paymentType) => {
     setLoading(true);
     try {
@@ -50,7 +57,7 @@ const Payment = () => {
           'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
         },
         body: JSON.stringify({
-          amount: parseFloat(amount),
+          amount: calculateTotal(),
           payment_type: paymentType,
           order_items: items.map(item => ({
             pizza_id: item.pizzaId,
@@ -69,11 +76,19 @@ const Payment = () => {
         throw new Error(error.detail || 'Failed to create payment link');
       }
   
-      const { url } = await response.json();
-      if (url) {
-        window.location.href = url;
-      } else if (response.ok) {
-        router.push(`/order-success?order_id=${orderId}`);
+      const responseData = await response.json();
+      
+      if (responseData.url) {
+        // Store the complete order details, not just the order ID
+        localStorage.setItem('pendingOrderDetails', JSON.stringify(responseData));
+        clearCart();
+        window.location.href = responseData.url;
+      } else {
+        clearCart();
+        router.push({
+          pathname: '/order-success',
+          query: { ...responseData }, // Spread the complete response data like in COD flow
+        });
       }
     } catch (error) {
       console.error('Error:', error);
@@ -81,7 +96,20 @@ const Payment = () => {
     } finally {
       setLoading(false);
     }
-  };
+};
+
+// In your payment success page component
+useEffect(() => {
+  const pendingOrderDetails = localStorage.getItem('pendingOrderDetails');
+  if (pendingOrderDetails) {
+    // Apply the order details to your page
+    const orderData = JSON.parse(pendingOrderDetails);
+    // Update your UI with orderData
+    
+    // Clear the stored details
+    localStorage.removeItem('pendingOrderDetails');
+  }
+}, []);
 
   const paymentOptions = [
     { 

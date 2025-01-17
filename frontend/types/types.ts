@@ -73,3 +73,9 @@ export const PIZZA_CATEGORIES = [
 ] as const;
 
 export type PizzaCategory = typeof PIZZA_CATEGORIES[number]['id'];
+
+export interface PizzaCategoryType {
+  id: PizzaCategory;
+  name: string;
+  icon: string;
+}

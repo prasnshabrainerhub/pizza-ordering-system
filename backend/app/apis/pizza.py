@@ -119,15 +119,35 @@ def update_pizza(
     payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
     if payload.get("role") != UserRole.ADMIN:
         raise HTTPException(status_code=403, detail="Only admins can update pizzas")
-    return PizzaService.update_pizza(db, pizza_id, pizza_update)
+    
+    updated_pizza = PizzaService.update_pizza(db, pizza_id, pizza_update)
+    # Convert to dict and include all necessary fields
+    return {
+        "message": "Pizza updated successfully",
+        "pizza": {
+            "pizza_id": str(updated_pizza.pizza_id),
+            "name": updated_pizza.name,
+            "description": updated_pizza.description,
+            "base_price": updated_pizza.base_price,
+            "category": updated_pizza.category,
+            "sizes": updated_pizza.sizes,
+            "image_url": updated_pizza.image_url
+        }
+    }
 
 @router.delete("/pizzas/{pizza_id}")
 def delete_pizza(
-    pizza_id: uuid.UUID,
+    pizza_id: uuid.UUID,  # FastAPI will automatically validate and parse this
     db: Session = Depends(get_db),
     token: str = Depends(JWTBearer())
-):
-    payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
-    if payload.get("role") != UserRole.ADMIN:
-        raise HTTPException(status_code=403, detail="Only admins can delete pizzas")
-    PizzaService.delete_pizza(db, pizza_id)
+) -> dict:
+    try:
+        payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
+        if payload.get("role") != UserRole.ADMIN:
+            raise HTTPException(status_code=403, detail="Only admins can delete pizzas")
+        
+        PizzaService.delete_pizza(db, pizza_id)
+        return {"message": "Pizza deleted successfully"}
+        
+    except jwt.JWTError:
+        raise HTTPException(status_code=401, detail="Invalid token")

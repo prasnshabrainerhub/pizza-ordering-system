@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Enum as SQLAlchemyEnum
+from sqlalchemy import Column, String, Enum as SQLAlchemyEnum, Enum as SQLEnum
 from app.core.database import Base
 import enum
 from sqlalchemy import Table, ForeignKey, Column, Integer, Float, DateTime, Boolean, JSON
@@ -24,14 +24,6 @@ class User(Base):
     created_at = Column(DateTime, default=datetime.now(timezone.utc))
     address = Column(String)
     orders = relationship("Order", back_populates="user")
-
-
-class OrderStatus(str, enum.Enum):
-    RECEIVED = "received"
-    PREPARING = "preparing"
-    BAKING = "baking"
-    READY = "ready"
-    DELIVERED = "delivered"
 
 pizza_toppings = Table(
     'pizza_toppings',
@@ -83,6 +75,13 @@ class Topping(Base):
     is_vegetarian = Column(Boolean, default=False)
     pizzas = relationship("Pizza", secondary=pizza_toppings, back_populates="toppings")
 
+class OrderStatus(str, enum.Enum):
+    RECEIVED = "RECEIVED"
+    PREPARING = "PREPARING"
+    BAKING = "BAKING"
+    READY = "READY"
+    DELIVERED = "DELIVERED"
+
 class Order(Base):
     __tablename__ = "orders"
     
@@ -90,7 +89,7 @@ class Order(Base):
     user_id = Column(UUID(as_uuid=True), ForeignKey('users.user_id'))
     total_amount = Column(Float, nullable=False)
     order_date = Column(DateTime, default=lambda: datetime.now(timezone.utc))
-    status = Column(SQLAlchemyEnum(OrderStatus), default=OrderStatus.RECEIVED)
+    status = Column(SQLEnum(OrderStatus), default=OrderStatus.RECEIVED)
     delivery_address = Column(String, nullable=False)
     contact_number = Column(String, nullable=False)
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc)) 

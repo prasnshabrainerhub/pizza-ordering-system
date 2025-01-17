@@ -1,74 +1,10 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { ArrowLeft, Eye } from 'lucide-react';
 import { jwtDecode } from 'jwt-decode';
 import { Card, CardContent } from '@/components/ui/card';
 import { useRouter } from 'next/router';
 import { useTranslation } from 'next-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
-
-const OrderStatus = ({ status }) => {
-  const getStatusColor = (status) => {
-    switch (status?.toLowerCase()) {
-      case 'received':
-        return 'bg-blue-100 text-blue-800';
-      case 'being baked':
-        return 'bg-yellow-100 text-yellow-800';
-      case 'dispatched':
-        return 'bg-orange-100 text-orange-800';
-      case 'delivered':
-        return 'bg-green-100 text-green-800';
-      default:
-        return 'bg-gray-100 text-gray-800';
-    }
-  };
-  return (
-    <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(status)}`}>
-      {status}
-    </span>
-  );
-};
-
-const OrderStatusProgress = ({ status }) => {
-  const statuses = ['received', 'being baked', 'dispatched', 'delivered'];
-  const currentIndex = statuses.indexOf(status?.toLowerCase());
-  
-  console.log('Progress bar status:', status);
-  console.log('Current index:', currentIndex);
-
-  return (
-    <div className="w-full mt-4">
-      <div className="flex justify-between mb-2">
-        {statuses.map((s, index) => (
-          <div
-            key={s}
-            className={`text-sm ${
-              index <= currentIndex ? 'text-black' : 'text-gray-400'
-            } capitalize`}
-          >
-            {s}
-          </div>
-        ))}
-      </div>
-      <div className="relative pt-1">
-        <div className="overflow-hidden h-2 mb-4 text-xs flex rounded bg-gray-200">
-          {statuses.map((_, index) => (
-            <div
-              key={index}
-              style={{ width: `${100 / statuses.length}%` }}
-              className={`${
-                index <= currentIndex 
-                  ? index === currentIndex 
-                    ? 'bg-green-500' 
-                    : 'bg-green-600'
-                  : 'bg-gray-200'
-              } transition-all duration-500`}
-            ></div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-};
 
 const OrderCard = ({ order, onViewOrder }) => {
   return (
@@ -83,7 +19,9 @@ const OrderCard = ({ order, onViewOrder }) => {
               <p className="text-black">#{order.order_id}</p>
             </div>
           </div>
-          <OrderStatus status={order.status} />
+          <div className='w-70bg-blue-500 text-black text-center rounded px-2 py-1 text-sm inline-block mb-2" h-50 bg-blue-100 rounded-lg flex items-center justify-center'>
+          <span className="text-black">{order.status}</span>
+          </div>
         </div>
         <div className="mt-4 flex justify-between items-center">
           <p className="text-black">{new Date(order.order_date).toLocaleString()}</p>
@@ -98,7 +36,6 @@ const OrderCard = ({ order, onViewOrder }) => {
             </button>
           </div>
         </div>
-        <OrderStatusProgress status={order.status} />
       </CardContent>
     </Card>
   );
@@ -115,9 +52,9 @@ const OrderDetails = ({ order, onBack }) => (
       </div>
       
       <div className="space-y-4">
-        <div className="flex justify-between items-center">
+        <div className="flex justify-between">
           <span className="text-black">Status</span>
-          <OrderStatus status={order.status} />
+          <span className="text-black">{order.status}</span>
         </div>
         
         <div className="flex justify-between">
@@ -127,7 +64,7 @@ const OrderDetails = ({ order, onBack }) => (
         
         <div className="flex justify-between">
           <span className="text-black">Restaurant</span>
-          <span className="text-black">Surdhara</span>
+          <span className="text-black">Ahmedabad</span>
         </div>
         
         <div className="flex justify-between">
@@ -156,8 +93,6 @@ const OrderDetails = ({ order, onBack }) => (
             </div>
           </div>
         )}
-        
-        <OrderStatusProgress status={order.status} />
       </div>
     </CardContent>
   </Card>
@@ -169,7 +104,6 @@ const OrdersPage = () => {
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const statusIntervalsRef = useRef({});
 
   const checkAuth = useCallback(() => {
     const token = localStorage.getItem('access_token');
@@ -226,78 +160,8 @@ const OrdersPage = () => {
     }
   }, [checkAuth, router]);
 
-  const updateOrderStatus = useCallback((orderId) => {
-    const statuses = ['received', 'being baked', 'dispatched', 'delivered'];
-    
-    setOrders(prevOrders => {
-      const orderIndex = prevOrders.findIndex(order => order.order_id === orderId);
-      if (orderIndex === -1) return prevOrders;
-
-      const order = prevOrders[orderIndex];
-      const currentStatusIndex = statuses.indexOf(order.status.toLowerCase());
-      
-      // If already delivered or invalid status, don't update
-      if (currentStatusIndex === -1 || currentStatusIndex === statuses.length - 1) {
-        console.log(`Order ${orderId} is already delivered or has invalid status`);
-        return prevOrders;
-      }
-
-      const nextStatus = statuses[currentStatusIndex + 1];
-      console.log(`Updating order ${orderId} from ${order.status} to ${nextStatus}`);
-
-      const updatedOrders = [...prevOrders];
-      updatedOrders[orderIndex] = {
-        ...order,
-        status: nextStatus,
-        lastUpdated: new Date().toISOString()
-      };
-
-      // If status becomes 'delivered', clear the interval
-      if (nextStatus === 'delivered') {
-        console.log(`Order ${orderId} is now delivered. Clearing interval.`);
-        if (statusIntervalsRef.current[orderId]) {
-          clearInterval(statusIntervalsRef.current[orderId]);
-          delete statusIntervalsRef.current[orderId];
-        }
-      }
-
-      return updatedOrders;
-    });
-  }, []);
-
-  // Setup intervals for status updates
-  useEffect(() => {
-    console.log('Setting up status intervals for orders:', orders);
-    
-    // Clear any existing intervals
-    Object.values(statusIntervalsRef.current).forEach(interval => clearInterval(interval));
-    statusIntervalsRef.current = {};
-
-    // Set up new intervals for non-delivered orders
-    orders.forEach(order => {
-      if (order.status.toLowerCase() !== 'delivered') {
-        console.log(`Setting up interval for order ${order.order_id}`);
-        
-        statusIntervalsRef.current[order.order_id] = setInterval(() => {
-          console.log(`Checking status update for order ${order.order_id}`);
-          updateOrderStatus(order.order_id);
-        }, 10000); // 30 seconds
-      } else {
-        console.log(`Order ${order.order_id} is already delivered. No interval needed.`);
-      }
-    });
-
-    return () => {
-      console.log('Cleaning up all intervals');
-      Object.values(statusIntervalsRef.current).forEach(interval => clearInterval(interval));
-      statusIntervalsRef.current = {};
-    };
-  }, [orders, updateOrderStatus]);
-
   useEffect(() => {
     fetchOrders();
-    const fetchInterval = setInterval(fetchOrders, 300000); // 5 minutes
-    return () => clearInterval(fetchInterval);
   }, [fetchOrders]);
 
   if (loading) {
@@ -331,7 +195,7 @@ const OrdersPage = () => {
         >
           <ArrowLeft className="w-6 h-6" />
         </button>
-        <h1 className="text-xl font-semibold text-black">Back</h1>
+        <h1 className="text-xl font-semibold text-black">Orders</h1>
       </div>
       
       {selectedOrder ? (

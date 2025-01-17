@@ -91,6 +91,9 @@ export const Promotions: React.FC = () => {
                 className="flex-shrink-0 bg-white rounded-lg p-6 min-w-[200px] relative group cursor-pointer hover:shadow-lg transition-all duration-300"
                 onClick={() => handleCopyCode(coupon.code)}
               >
+                <div className="bg-green-500 text-white text-center rounded px-2 py-1 text-sm inline-block mb-2">
+                  {coupon.code}
+                </div>
                 <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                   <span className="text-xs text-green-600 font-medium">{t('Click to copy')}</span>
                 </div>

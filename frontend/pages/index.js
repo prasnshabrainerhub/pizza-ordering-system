@@ -10,50 +10,50 @@ import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 const Home = () => {
   const { t } = useTranslation();
   return (
-    <div className="relative min-h-screen w-full">
-      <div>
-        <Header />
-      </div>
+    <div className="relative w-full">
+      <Header />
 
-      {/* Background Image with Light Overlay */}
-      <div className="absolute top-0 left-0 w-full h-[110vh] bg-cover bg-blend-lighten bg-center z-0">
-        <div className="w-full h-full bg-black opacity-40"></div> {/* Light Overlay */}
+      {/* Hero Section with Background */}
+      <section className="relative h-[80vh]"> {/* Reduced from 110vh to 80vh */}
+        {/* Background Image */}
+        <div className="absolute inset-0">
+          <div className="absolute inset-0 bg-black opacity-40 z-10"></div>
           <Image
             src="/Homemain.png"
             alt="Delicious Pizza"
             fill
             style={{ 
               objectFit: "cover", 
-              filter: "blur(8px)" // Keeps the blur effect
+              filter: "blur(3px)"
             }}
-        />
-      </div>
-
-
-      {/* Centered Text Content */}
-      <div className="relative z-10 flex items-center justify-center min-h-screen">
-        <div className="text-center text-white px-4">
-          <h1 className="text-4xl font-bold mb-6">
-            {t('Welcome to Pizza Bliss')}
-          </h1>
-          <p className="text-xl mb-8">
-            {t('Satisfy your cravings with the finest pizza in town! Fresh ingredients, fast delivery, and unbeatable taste.')}
-          </p>
-          <Link href="/dashboard">
-            <button className="bg-red-500 text-white px-8 py-4 text-lg font-bold rounded hover:bg-red-600 transition-colors uppercase">
-             {t(' Lets Eat')}
-            </button>
-          </Link>
+          />
         </div>
-      </div>
 
-      {/* New Content Section */}
+        {/* Hero Content */}
+        <div className="relative z-20 h-full flex items-center justify-center">
+          <div className="text-center text-white px-4">
+            <h1 className="text-4xl font-bold mb-6">
+              {t('Welcome to Pizza Bliss')}
+            </h1>
+            <p className="text-xl mb-8">
+              {t('Satisfy your cravings with the finest pizza in town! Fresh ingredients, fast delivery, and unbeatable taste.')}
+            </p>
+            <Link href="/dashboard">
+              <button className="bg-red-500 text-white px-8 py-4 text-lg font-bold rounded hover:bg-red-600 transition-colors uppercase">
+                {t('Lets Eat')}
+              </button>
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Content Section */}
       <section className="py-16 bg-white">
-        <div className="container mx-auto flex items-center justify-between px-6">
+        <div className="container mx-auto flex flex-col md:flex-row items-center justify-between px-6 gap-8">
           {/* Left Side: Pizza Image */}
-          <div className="w-1/3">
+          <div className="w-full md:w-1/3">
             <Image 
-              src="/Homepageimage1.png" // Add your pizza image path here
+              src="/Homepageimage1.png"
               alt="Pizza"
               className="w-full rounded-lg shadow-lg"
               width={400}
@@ -61,37 +61,29 @@ const Home = () => {
             />
           </div>
 
-           {/* Content Section with Text Box */}
-           <div className="relative z-10 flex items-center justify-center h-[50vh] px-4">
-            <div className="max-w-3xl w-full bg-white p-8">
-              <div className="space-y-4 text-left">
-                {/* Red Line and Text: since 2021 */}
-                <div className="flex items-center mb-4">
-                  <div className="w-16 h-1 bg-red-500 mr-2"></div>
-                  <p className="text-red-500 text-sm font-medium">{t('since 2021')}</p>
-                </div>
-
-                {/* Main Title: Pizza So Good, Even Your Diet Will Cheat! */}
-                <h3 className="text-5xl font-extrabold text-gray-800 tracking-tight font-serif">
-                  {t('Pizza So Good, Even')}
-                </h3>
-                <h2 className="text-4xl font-extrabold text-gray-800 tracking-tight font-serif">
-                  {t('Your Diet Will Cheat!')}
-                </h2>
-
-                {/* Description Text: Box-like Format */}
-                <p className="text-lg text-gray-600 leading-relaxed pt-6 mt-6">
-                  {t('Each slice is an adventure, featuring a golden crust that is both crispy and soft, layered with vibrant')}
-                  {t('fresh toppings and rich sauces. Whether you crave classic flavors or bold new combinations, each bite is')}
-                  {t('a flavorful rebellion against boring meals. Experience the best pizza at La Milano Pizzeria. Where every')}
-                  {t('pizza is crafted to perfection. With our pizza order online option.')}
-                </p>
+          {/* Right Side: Content */}
+          <div className="w-full md:w-2/3 bg-white p-8">
+            <div className="space-y-4">
+              <div className="flex items-center mb-4">
+                <div className="w-16 h-1 bg-red-500 mr-2"></div>
+                <p className="text-red-500 text-sm font-medium">{t('since 2021')}</p>
               </div>
+
+              <h3 className="text-5xl font-extrabold text-gray-800 tracking-tight font-serif">
+                {t('Pizza So Good, Even')}
+              </h3>
+              <h2 className="text-4xl font-extrabold text-gray-800 tracking-tight font-serif">
+                {t('Your Diet Will Cheat!')}
+              </h2>
+
+              <p className="text-lg text-gray-600 leading-relaxed pt-6">
+                {t('Each slice is an adventure, featuring a golden crust that is both crispy and soft, layered with vibrant fresh toppings and rich sauces. Whether you crave classic flavors or bold new combinations, each bite is a flavorful rebellion against boring meals. Experience the best pizza at La Milano Pizzeria. Where every pizza is crafted to perfection. With our pizza order online option.')}
+              </p>
             </div>
           </div>
         </div>
       </section>
-
+      
       {/* Offer Slider Section */}
       <div className="px-4 py-16 bg-gray-90">
         {/* Offer Title */}

@@ -6,9 +6,10 @@ from app.schema.order import OrderCreate
 from app.services.order_service import OrderService
 from app.core.config import settings
 from app.core.security import JWTBearer
-from app.models.models import UserRole, Order, User
+from app.models.models import UserRole, Order, OrderStatus
 from uuid import UUID
 import uuid
+from app.services.order_status_service import OrderStatusService
 
 router = APIRouter()
 
@@ -21,31 +22,26 @@ def get_orders(
     user_id = uuid.UUID(payload["sub"])
     return OrderService.get_user_orders(db, user_id)
 
-@router.get("/orders/{order_id}")
-def get_order(
-    order_id: uuid.UUID,
-    db: Session = Depends(get_db),
-    token: str = Depends(JWTBearer())
-):
-    payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
-    user_id = uuid.UUID(payload["sub"])
-    order = OrderService.get_user_order_by_id(db, user_id, order_id)
-
-    if order is None:
-        raise HTTPException(status_code=404, detail="Order not found")
-
-    return order
-
-@router.get("/orders/history")
+@router.get("/orders/history")  # Moved before the parameterized route
 def get_order_history(
     db: Session = Depends(get_db),
     token: str = Depends(JWTBearer())
 ):
     payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
     if payload.get("role") != UserRole.ADMIN:
-         raise HTTPException(status_code=403, detail="Only admins can get order history")
+        raise HTTPException(status_code=403, detail="Only admins can get order history")
     return db.query(Order).all()
 
+@router.get("/orders/{order_id}")  # Now comes after /orders/history
+def get_order_by_id(
+    order_id: uuid.UUID,
+    db: Session = Depends(get_db),
+    token: str = Depends(JWTBearer())
+):
+    order = db.query(Order).filter(Order.order_id == order_id).first()
+    if not order:
+        raise HTTPException(status_code=404, detail="Order not found")
+    return order
 
 @router.post("/orders")
 def create_order(
@@ -54,31 +50,31 @@ def create_order(
     token: str = Depends(JWTBearer())
 ):
     try:
-        # Decode JWT token to get user_id
         decoded_token = jwt.decode(
             token, 
             settings.SECRET_KEY, 
             algorithms=[settings.ALGORITHM]
         )
         user_id = UUID(decoded_token["sub"])
-
-        # Create order using OrderService
-        return OrderService.create_order(
-            db=db,
-            order=order,
-            user_id=user_id
+        
+        new_order = Order(
+            user_id=user_id,
+            status=OrderStatus.RECEIVED,
+            total_amount=order.total_amount,
+            delivery_address=order.delivery_address,
+            contact_number=order.contact_number
         )
-    except jwt.InvalidTokenError:
-        raise HTTPException(
-            status_code=401,
-            detail="Invalid token"
-        )
-    except ValueError as ve:
-        raise HTTPException(
-            status_code=422,
-            detail="Invalid UUID format"
-        )
+        
+        db.add(new_order)
+        db.commit()
+        db.refresh(new_order)
+        
+        OrderStatusService.start_status_updates(db, new_order.order_id)
+        
+        return new_order
+        
     except Exception as e:
+        db.rollback()
         raise HTTPException(
             status_code=500,
             detail=str(e)

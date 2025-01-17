@@ -24,8 +24,13 @@ interface PizzaFormData {
     image: File | null;
 }
 
-interface Pizza extends Omit<PizzaFormData, 'image'> {
-    id: string;
+interface Pizza {
+    pizza_id: string;
+    name: string;
+    description: string;
+    base_price: number;
+    category: string;
+    sizes: PizzaSize[];
     image_url: string;
 }
 
@@ -35,7 +40,9 @@ export const PizzaManagement: React.FC = () => {
     const [isAddingPizza, setIsAddingPizza] = useState(false);
     const [editingPizza, setEditingPizza] = useState<Pizza | null>(null);
     const [imagePreview, setImagePreview] = useState<string>('');
-    const [formData, setFormData] = useState<PizzaFormData>({
+
+    // Initialize form data with default values
+    const defaultFormData: PizzaFormData = {
         name: '',
         description: '',
         base_price: 0,
@@ -46,20 +53,16 @@ export const PizzaManagement: React.FC = () => {
             { size: PizzaSizeEnum.LARGE, price: 0 },
         ],
         image: null,
-    });
-    
+    };
+
+    const [formData, setFormData] = useState<PizzaFormData>(defaultFormData);
+
     const getImageUrl = (url: string | null | undefined): string => {
         if (!url) return '/placeholder-pizza.jpg';
         if (url.startsWith('http://') || url.startsWith('https://')) {
             return url;
         }
-        
-        // If it's a relative URL without leading slash, add it
-        if (!url.startsWith('/')) {
-            return `/${url}`;
-        }
-        
-        return url;
+        return url.startsWith('/') ? url : `/${url}`;
     };
 
     const fetchPizzas = async () => {
@@ -72,16 +75,35 @@ export const PizzaManagement: React.FC = () => {
             });
             if (response.ok) {
                 const data = await response.json();
-                setPizzas(data);
+                setPizzas(Array.isArray(data) ? data : []);
+            } else {
+                console.error('Error fetching pizzas:', response.status);
+                setPizzas([]);
             }
         } catch (error) {
             console.error('Error fetching pizzas:', error);
+            setPizzas([]);
         }
     };
 
     useEffect(() => {
         fetchPizzas();
     }, []);
+
+    const handleEditClick = (pizza: Pizza) => {
+        console.log('Editing pizza:', pizza);
+        setEditingPizza(pizza);
+        setFormData({
+            name: pizza.name,
+            description: pizza.description,
+            base_price: pizza.base_price,
+            category: pizza.category,
+            sizes: pizza.sizes,
+            image: null,
+        });
+        setImagePreview(getImageUrl(pizza.image_url));
+        setIsAddingPizza(true);  // Show the form when editing
+    };
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -123,13 +145,11 @@ export const PizzaManagement: React.FC = () => {
             }
 
             const url = editingPizza 
-                ? `http://localhost:8000/api/pizzas/${editingPizza.id}`
+                ? `http://localhost:8000/api/pizzas/${editingPizza.pizza_id}`
                 : 'http://localhost:8000/api/pizzas';
-            
-            const method = editingPizza ? 'PUT' : 'POST';
 
             const response = await fetch(url, {
-                method,
+                method: editingPizza ? 'PUT' : 'POST',
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -141,8 +161,9 @@ export const PizzaManagement: React.FC = () => {
                 throw new Error(errorData.detail || 'Failed to save pizza');
             }
 
-            await fetchPizzas();
-            resetForm();
+            await fetchPizzas();  // Refresh the pizza list
+            resetForm();  // Reset the form after successful submission
+            
         } catch (error) {
             console.error('Error saving pizza:', error);
             alert(error instanceof Error ? error.message : 'Failed to save pizza');
@@ -153,6 +174,11 @@ export const PizzaManagement: React.FC = () => {
         if (!confirm('Are you sure you want to delete this pizza?')) return;
 
         const token = localStorage.getItem('access_token');
+        if (!token) {
+            alert('Please log in again');
+            return;
+        }
+
         try {
             const response = await fetch(`http://localhost:8000/api/pizzas/${pizzaId}`, {
                 method: 'DELETE',
@@ -163,36 +189,34 @@ export const PizzaManagement: React.FC = () => {
 
             if (response.ok) {
                 await fetchPizzas();
+            } else {
+                const errorData = await response.json();
+                alert(errorData.detail || 'Error deleting pizza');
             }
         } catch (error) {
             console.error('Error deleting pizza:', error);
+            alert('Error deleting pizza');
         }
     };
 
     const resetForm = () => {
-        setFormData({
-            name: '',
-            description: '',
-            base_price: 0,
-            category: PIZZA_CATEGORIES[0].id,
-            sizes: [
-                { size: PizzaSizeEnum.SMALL, price: 0 },
-                { size: PizzaSizeEnum.MEDIUM, price: 0 },
-                { size: PizzaSizeEnum.LARGE, price: 0 },
-            ],
-            image: null,
-        });
+        setFormData(defaultFormData);
         setImagePreview('');
         setIsAddingPizza(false);
         setEditingPizza(null);
     };
 
     return (
-        <div>
+        <div className="container mx-auto p-4">
             <div className="flex justify-between items-center mb-6">
                 <h2 className="text-xl font-semibold">{t('Manage Pizzas')}</h2>
                 <button
-                    onClick={() => setIsAddingPizza(true)}
+                    onClick={() => {
+                        setIsAddingPizza(true);
+                        setEditingPizza(null);
+                        setFormData(defaultFormData);
+                        setImagePreview('');
+                    }}
                     className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 flex items-center gap-2"
                 >
                     <Plus size={20} />
@@ -200,7 +224,7 @@ export const PizzaManagement: React.FC = () => {
                 </button>
             </div>
 
-            {(isAddingPizza || editingPizza) && (
+            {isAddingPizza && (
                 <form onSubmit={handleSubmit} className="mb-6 bg-gray-50 p-6 rounded-lg">
                     <div className="flex flex-col items-center mb-4">
                         <label className="w-full border-2 border-dashed border-gray-300 rounded-lg p-4 cursor-pointer hover:border-red-500 transition-colors">
@@ -217,14 +241,6 @@ export const PizzaManagement: React.FC = () => {
                                         alt="Preview" 
                                         className="w-32 h-32 object-cover rounded-lg mb-2" 
                                     />
-                                ) : editingPizza?.image_url ? (
-                                    <Image
-                                        src={getImageUrl(editingPizza.image_url)}
-                                        alt="Current"
-                                        width={128}
-                                        height={128}
-                                        className="object-cover rounded-lg mb-2"
-                                    />
                                 ) : (
                                     <Upload className="w-12 h-12 text-gray-400 mb-2" />
                                 )}
@@ -233,7 +249,6 @@ export const PizzaManagement: React.FC = () => {
                         </label>
                     </div>
 
-                    {/* Basic Information */}
                     <div className="space-y-4">
                         <div>
                             <label className="block text-sm font-medium text-gray-700">{t('Name')}</label>
@@ -257,7 +272,7 @@ export const PizzaManagement: React.FC = () => {
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-gray-700">Base Price</label>
+                            <label className="block text-sm font-medium text-gray-700">{t('Base Price')}</label>
                             <input
                                 type="number"
                                 value={formData.base_price}
@@ -275,16 +290,16 @@ export const PizzaManagement: React.FC = () => {
                                 className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2"
                                 required
                             >
-                                {PIZZA_CATEGORIES.map(category => (
-                                <option key={category.id} value={category.id}>
-                                    {category.name}
-                                </option>
+                                {PIZZA_CATEGORIES.map((category) => (
+                                    <option key={category.id} value={category.id}>
+                                        {category.name} {category.icon}
+                                    </option>
                                 ))}
                             </select>
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-gray-700">{t('Sizes')}</label>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">{t('Sizes')}</label>
                             <div className="space-y-2">
                                 {formData.sizes.map((size, index) => (
                                     <div key={size.size} className="flex items-center gap-4">
@@ -294,18 +309,19 @@ export const PizzaManagement: React.FC = () => {
                                             value={size.price}
                                             onChange={(e) => handleSizePriceChange(index, parseFloat(e.target.value))}
                                             className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2"
+                                            required
                                         />
                                     </div>
                                 ))}
                             </div>
                         </div>
-                        
-                        <div className="flex gap-2">
+
+                        <div className="flex gap-2 pt-4">
                             <button
                                 type="submit"
                                 className="flex-1 bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600"
                             >
-                                {editingPizza ? 'Update' : 'Create'} {t('Pizza')}
+                                {editingPizza ? t('Update Pizza') : t('Create Pizza')}
                             </button>
                             <button
                                 type="button"
@@ -319,7 +335,6 @@ export const PizzaManagement: React.FC = () => {
                 </form>
             )}
 
-            {/* Pizza List */}
             <div className="bg-white rounded-lg shadow overflow-hidden">
                 <table className="min-w-full">
                     <thead className="bg-gray-50">
@@ -332,47 +347,51 @@ export const PizzaManagement: React.FC = () => {
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-200">
-                        {pizzas.map((pizza) => (
-                            <tr key={pizza.id}>
-                                <td className="px-6 py-4 whitespace-nowrap">
-                                    <div className="h-12 w-12 relative">
-                                        <Image
-                                            src={getImageUrl(pizza.image_url)}
-                                            alt={pizza.name}
-                                            width={48}
-                                            height={48}
-                                            className="rounded-md object-cover"
-                                        />
-                                    </div>
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap">{pizza.name}</td>
-                                <td className="px-6 py-4 whitespace-nowrap">{pizza.category}</td>
-                                <td className="px-6 py-4 whitespace-nowrap">₹{pizza.base_price}</td>
-                                <td className="px-6 py-4 whitespace-nowrap text-right">
-                                    <button
-                                        onClick={() => {
-                                            setEditingPizza(pizza);
-                                            setFormData({
-                                                ...pizza,
-                                                image: null,
-                                            });
-                                        }}
-                                        className="text-blue-600 hover:text-blue-900 mr-4"
-                                    >
-                                        <Edit2 size={20} />
-                                    </button>
-                                    <button
-                                        onClick={() => handleDelete(pizza.id)}
-                                        className="text-red-600 hover:text-red-900"
-                                    >
-                                        <Trash2 size={20} />
-                                    </button>
+                        {pizzas && pizzas.length > 0 ? (
+                            pizzas.map((pizza) => (
+                                <tr key={pizza.pizza_id}>
+                                    <td className="px-6 py-4 whitespace-nowrap">
+                                        <div className="h-12 w-12 relative">
+                                            <Image
+                                                src={getImageUrl(pizza.image_url)}
+                                                alt={pizza.name}
+                                                width={48}
+                                                height={48}
+                                                className="rounded-md object-cover"
+                                            />
+                                        </div>
+                                    </td>
+                                    <td className="px-6 py-4 whitespace-nowrap">{pizza.name}</td>
+                                    <td className="px-6 py-4 whitespace-nowrap">{pizza.category}</td>
+                                    <td className="px-6 py-4 whitespace-nowrap">₹{pizza.base_price}</td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-right">
+                                        <button
+                                            onClick={() => handleEditClick(pizza)}
+                                            className="text-blue-600 hover:text-blue-900 mr-4"
+                                        >
+                                            <Edit2 size={20} />
+                                        </button>
+                                        <button
+                                            onClick={() => handleDelete(pizza.pizza_id)}
+                                            className="text-red-600 hover:text-red-900"
+                                        >
+                                            <Trash2 size={20} />
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))
+                        ) : (
+                            <tr>
+                                <td colSpan={5} className="px-6 py-4 text-center text-gray-500">
+                                    {t('No pizzas available')}
                                 </td>
                             </tr>
-                        ))}
+                        )}
                     </tbody>
                 </table>
             </div>
         </div>
     );
 };
+
+export default PizzaManagement;

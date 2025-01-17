@@ -2,9 +2,9 @@ from fastapi import HTTPException
 from typing import List
 import uuid
 from sqlalchemy.orm import Session
-from app.models.models import User, Order, OrderItem, OrderStatus, Pizza, Topping, PizzaSizeEnum
+from app.models.models import User, Order, OrderItem, OrderStatus
+from app.services.order_status_service import OrderStatusService
 from app.schema.order import OrderCreate
-from app.services.coupon_services import CouponService
 from app.services.notification_service import notify_user
 from app.core.database import get_db
 
@@ -55,6 +55,8 @@ class OrderService:
             user = db.query(User).filter(User.user_id == user_id).first()
             if user and user.email:
                 notify_user(email=user.email, phone_number=user.phone_number)
+
+            OrderStatus.start_status_updates(db, db_order.order_id)
 
             return db_order
 

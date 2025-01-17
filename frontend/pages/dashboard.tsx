@@ -171,12 +171,9 @@ const Dashboard: React.FC = () => {
 
 
 export const getServerSideProps = async ({ locale }) => {
-<<<<<<< HEAD
-=======
   if (!locale) {
     locale = ['en', 'es', 'hi'];
   }
->>>>>>> 116d88e589facdcd06335a49c61bad8af2000061
   return {
     props: {
       ...(await serverSideTranslations(locale ?? 'en', ['common'])),
