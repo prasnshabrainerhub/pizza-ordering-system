@@ -49,7 +49,7 @@ Ensure you have the following installed:
 1. **Clone the Repository**:
 
    ```bash
-   git clone https://github.com/yourusername/pizza-ordering-system.git
+   git clone https://github.com/prasnshabrainerhub/pizza-ordering-system.git
    cd pizza-ordering-system
 
 2. **Navigate to the Project Directory**:
@@ -103,9 +103,17 @@ Ensure you have the following installed:
 
 ### Usage
 
+  ***First it is compulsory to signup/login as Admin and create pizza, coupons and toppings. After the complition of this process Everything gets display on Dashboard.***
+
   - Users can sign up, browse available pizzas, place orders, and view their order history.
+  - For payment user has 2 options cod and online 
+  - If User choose cod, order gets placed directly and user can track their order status live on order success page which will get update on every 15 sec (for testing puropse)
+  - If User selects online payment the user will redirect to payment page where "card" payment needs to be selected, after selection of card option User will redirect to "Stripe Payment gateway page" after completion of payment User will get redirect again to order success page where they can track their status.
+  - Users can choose upto 3 languages for Pizza Bliss website.
+
   - Admins can log in to the admin panel to manage pizzas, orders, toppings, and coupons.
   - Admins will create pizza's with the respective categories mentioned and that pizza will get display under that categorie's header on Dashboard.
+  - Admins can create, update, delete pizzas, toppings and coupons.
 
 ### Contributing
 
