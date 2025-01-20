@@ -11,7 +11,8 @@ import { CouponManagement } from '../components/admin/CreateCouponForm';
 import { ToppingManagement } from '../components/admin/CreateToppings';
 import { PIZZA_CATEGORIES } from '../types/types';
 import { useTranslation } from 'react-i18next';
-// import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+import { GetServerSideProps } from 'next';
 
 
 enum PizzaSizeEnum {
@@ -140,12 +141,12 @@ const Dashboard: React.FC = () => {
     <Header />
     <div className="flex flex-1 overflow-hidden">
       {/* Sidebar with Fixed Width */}
-      <div className="w-72 bg-gray-200 flex-shrink-0 overflow-y-auto">
+      <div className="w-72 flex-shrink-0">
         <Sidebar />
       </div>
 
       {/* Main Content */}
-      <main className="flex-1 overflow-y-auto p-6">
+      <main className="flex-1 p-6">
         <StoreHeader />
 
         {/* Admin Panel */}
@@ -189,15 +190,18 @@ const Dashboard: React.FC = () => {
 };
 
 
-// export const getServerSideProps = async ({ locale }) => {
-//   if (!locale) {
-//     locale = ['en', 'es', 'hi'];
-//   }
-//   return {
-//     props: {
-//       ...(await serverSideTranslations(locale ?? 'en', ['common'])),
-//     },
-//   };
-// };
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  let { locale } = context;
+  
+  if (!locale) {
+    locale = 'en'; // Default to 'en' if locale is not provided
+  }
+  
+  return {
+    props: {
+      ...(await serverSideTranslations(locale, ['common'])),
+    },
+  };
+};
 
 export default Dashboard;

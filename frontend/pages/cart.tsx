@@ -6,8 +6,10 @@ import Link from 'next/link';
 import { Header } from '../components/Header';
 import CartPromotions from "../components/CartPromotions";
 import { useTranslation } from 'next-i18next';
-// import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { Coupon, DiscountType } from '../types/types';
+import { GetServerSideProps } from 'next';
+
 
 const Cart = () => {
   const { t } = useTranslation('common');
@@ -279,6 +281,20 @@ const Cart = () => {
       </div>
     </div>
   );
+};
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  let { locale } = context;
+  
+  if (!locale) {
+    locale = 'en'; // Default to 'en' if locale is not provided
+  }
+  
+  return {
+    props: {
+      ...(await serverSideTranslations(locale, ['common'])),
+    },
+  };
 };
 
 export default Cart;

@@ -5,6 +5,8 @@ import { useCart } from '../components/CartContext';
 import { jwtDecode, JwtPayload } from "jwt-decode";
 import Image from 'next/image';
 import { useTranslation } from 'next-i18next'; 
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+import { GetServerSideProps } from 'next';
 
 interface CustomJwtPayload extends JwtPayload {
   delivery_address?: string;
@@ -240,6 +242,20 @@ const Payment = () => {
       </div>
     </div>
   );
+};
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  let { locale } = context;
+  
+  if (!locale) {
+    locale = 'en'; // Default to 'en' if locale is not provided
+  }
+  
+  return {
+    props: {
+      ...(await serverSideTranslations(locale, ['common'])),
+    },
+  };
 };
 
 export default Payment;

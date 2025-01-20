@@ -52,7 +52,7 @@ export const Sidebar = () => {
   }
 
   return (
-    <div className="w-72 bg-white text-black shadow-lg h-screen rounded-xl overflow-hidden">
+    <div className="w-72 bg-white text-black shadow-lg fixed h-[calc(100vh-64px)] rounded-xl overflow-y-auto">
       <div className="p-3">
         <div className="bg-green-600 rounded-lg shadow-md p-3">
           <h2 className="text-xl font-bold text-white text-center font-sans">

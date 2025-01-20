@@ -5,8 +5,9 @@ import { useCart } from '../components/CartContext';
 import { useState } from 'react';
 import { jwtDecode, JwtPayload } from "jwt-decode";
 import { useTranslation } from 'next-i18next';
-// import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import Image from 'next/image';
+import { GetServerSideProps } from 'next';
 
 
 interface CustomJwtPayload extends JwtPayload {
@@ -175,6 +176,20 @@ const Checkout = () => {
       </main>
     </div>
   );
+};
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  let { locale } = context;
+  
+  if (!locale) {
+    locale = 'en'; // Default to 'en' if locale is not provided
+  }
+  
+  return {
+    props: {
+      ...(await serverSideTranslations(locale, ['common'])),
+    },
+  };
 };
 
 export default Checkout;
